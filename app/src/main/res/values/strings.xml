@@ -4,5 +4,9 @@
     <string name="app_name">MaasHelper</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="et_account_hint">Email address</string>
+    <string name="et_password_hint">Password</string>
+    <string name="login">Sign in</string>
+    <string name="register">Register</string>
 
 </resources>

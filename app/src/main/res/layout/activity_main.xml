@@ -1,93 +1,64 @@
-<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    tools:context="com.linewx.maashelper.app.MainActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
 
+    <LinearLayout
+            android:id="@+id/buttom_bar_group"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" >
 
-    <TextView
-            android:layout_x="20dip"
-            android:layout_y="50dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Location:" />
+        <RelativeLayout style="@style/ButtomBar" >
 
-    <EditText
-            android:id="@+id/location"
-            android:layout_x="100dip"
-            android:layout_y="40dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="200dp" />
+            <ImageButton
+                    android:id="@+id/buttom_news"
+                    style="@style/ButtomBarImgBtn"
+                    android:background="@drawable/bar_news"
+                    android:contentDescription="@string/app_name" />
+        </RelativeLayout>
 
-    <TextView
-            android:layout_x="20dip"
-            android:layout_y="100dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Username:" />
+        <RelativeLayout style="@style/ButtomBar" >
 
-    <EditText
-            android:id="@+id/username"
-            android:layout_x="100dip"
-            android:layout_y="90dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="200dp" />
+            <ImageButton
+                    android:id="@+id/buttom_constact"
+                    style="@style/ButtomBarImgBtn"
+                    android:background="@drawable/bar_constact"
+                    android:contentDescription="@string/app_name" />
+        </RelativeLayout>
 
-    <TextView
-            android:layout_x="20dip"
-            android:layout_y="150dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Password:" />
+        <RelativeLayout style="@style/ButtomBar" >
 
-    <EditText
-            android:id="@+id/password"
-            android:layout_x="100dip"
-            android:layout_y="140dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="200dp" />
+            <ImageButton
+                    android:id="@+id/buttom_deynaimic"
+                    style="@style/ButtomBarImgBtn"
+                    android:background="@drawable/bar_deynaimic"
+                    android:contentDescription="@string/app_name" />
+        </RelativeLayout>
 
-    <TextView
-            android:layout_x="20dip"
-            android:layout_y="200dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Domain:" />
+        <RelativeLayout style="@style/ButtomBar" >
 
-    <EditText
-            android:id="@+id/domain"
-            android:layout_x="100dip"
-            android:layout_y="190dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="200dp" />
+            <ImageButton
+                    android:id="@+id/buttom_setting"
+                    style="@style/ButtomBarImgBtn"
+                    android:background="@drawable/bar_setting"
+                    android:contentDescription="@string/app_name" />
+        </RelativeLayout>
+    </LinearLayout>
 
-    <TextView
-            android:layout_x="20dip"
-            android:layout_y="250dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Project:" />
+    <View
+            android:id="@+id/line"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_above="@id/buttom_bar_group"
+            android:background="@color/devide_line" />
 
-    <EditText
-            android:id="@+id/project"
-            android:layout_x="100dip"
-            android:layout_y="240dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="200dp" />
+    <FrameLayout
+            android:id="@+id/fl_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/line" />
 
-    <Button
-            android:layout_x="20dip"
-            android:layout_y="300dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:width="300dp"
-            android:text="login"
-            android:onClick="login" />
-
-
-</AbsoluteLayout>
+</RelativeLayout>
