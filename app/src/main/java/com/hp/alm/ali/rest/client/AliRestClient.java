@@ -191,7 +191,11 @@ public class AliRestClient implements RestClient {
         SchemeRegistry schReg = new SchemeRegistry();
         schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
         schReg.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-        httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schReg), new BasicHttpParams());
+        //httpCLient = new DefaultHttpClient();
+        //httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schReg), new BasicHttpParams());
+        //httpClient = new DefaultHttpClient(params);
+        httpClient = new DefaultHttpClient();
+
 
         setTimeout(DEFAULT_CLIENT_TIMEOUT);
 
@@ -643,6 +647,8 @@ public class AliRestClient implements RestClient {
                 }
             }
             if(hasQcSession) {
+                //status = httpClient.execute(method);
+                //status = new DefaultHttpClient().execute(method);
                 status = httpClient.execute(method);
                 statusCode = status.getStatusLine().getStatusCode();
                 writeResponse(resultInfo, status, !doNotWriteForStatuses.contains(statusCode), method);

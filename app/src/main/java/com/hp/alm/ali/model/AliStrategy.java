@@ -16,13 +16,31 @@
 
 package com.hp.alm.ali.model;
 
-/*import com.hp.alm.ali.idea.content.detail.DetailContent;
-import com.hp.alm.ali.idea.rest.RestService;
-import com.intellij.openapi.project.Project;*/
+import com.hp.alm.ali.model.parser.RelationList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AliStrategy extends MayaStrategy {
+
+    @Override
+    public List<Relation> getRelationList(String entityType) {
+        List<Relation> list = super.getRelationList(entityType);
+
+        if("defect".equals(entityType)) {
+            list.addAll(relationList("changeset"));
+        }
+
+        return list;
+    }
+
+    protected List<Relation> relationList(String ... entityTypes) {
+        ArrayList<Relation> relations = new ArrayList<Relation>(entityTypes.length);
+        for(String entityType: entityTypes) {
+            relations.add(new Relation(entityType));
+        }
+        return relations;
+    }
 
     /*public AliStrategy(Project project, RestService restService) {
         super(project, restService);

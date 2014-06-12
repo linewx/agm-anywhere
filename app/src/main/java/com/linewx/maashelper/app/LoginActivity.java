@@ -1,5 +1,6 @@
 package com.linewx.maashelper.app;
 
+import android.content.Intent;
 import android.renderscript.RSRuntimeException;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 import com.hp.alm.ali.rest.client.AliRestClientFactory;
 import com.hp.alm.ali.rest.client.RestClient;
@@ -23,9 +25,15 @@ import com.hp.alm.ali.service.ServerType;
 import com.hp.alm.ali.service.RestService;
 import com.hp.alm.ali.model.parser.ProjectExtensionsList;
 import org.apache.http.HttpStatus;
+import com.hp.alm.ali.manager.*;
+import com.hp.alm.ali.entity.EntityQuery;
+import com.hp.alm.ali.model.parser.EntityList;
+import com.hp.alm.ali.service.EntityService;
+
 
 
 public class LoginActivity extends ActionBarActivity {
+    private Button mLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +45,10 @@ public class LoginActivity extends ActionBarActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        mLogin=(Button) findViewById(R.id.login);
+        mLogin.setOnClickListener(loginOnClickListener);
+
     }
 
 
@@ -68,6 +80,14 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
 
+    private View.OnClickListener loginOnClickListener=new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            login(v);
+
+        }
+    };
     public void login(View source) {
         //EditText location = (EditText) findViewById(R.id.location);
         EditText username = (EditText) findViewById(R.id.account);
@@ -75,54 +95,34 @@ public class LoginActivity extends ActionBarActivity {
         //EditText domain = (EditText) findViewById(R.id.domain);
         //EditText project = (EditText) findViewById(R.id.project);
 
-        RestClientFactory factory = AliRestClientFactory.getInstance();
 
-        //RestClient restClient = factory.create(location.toString(), domain.toString(), project.toString(), username.toString(), password.toString(), RestClient.SessionStrategy.NONE);
-        RestClient restClient = factory.create("test",
-                                                "test",
-                                                "test",
-                                                "test",
-                                                "test",
-                                                RestClient.SessionStrategy.NONE);
+        /*RestService restService = ApplicationManager.getRestService();
+        RestClient restClient = restService.createRestClient("https://agilemanager-int.saas.hp.com/agm",
+                "t604331885_hp_com",
+                "MaaS",
+                "ganlin.lu@hp.com",
+                "RainLu.1981",
+                RestClient.SessionStrategy.NONE);*/
+
+        RestClientFactory factory = AliRestClientFactory.getInstance();
+        RestClient restClient = factory.create("https://agilemanager-int.saas.hp.com/agm",
+                "t604331885_hp_com",
+                "MaaS",
+                "ganlin.lu@hp.com",
+                "RainLu.1981",
+                RestClient.SessionStrategy.NONE);
         restClient.setEncoding(null);
         restClient.setTimeout(10000);
 
         ServerType serverType = getServerType(restClient, true);
 
-        /*//restClient.login();
+/*        EntityQuery query = new EntityQuery("release");
+        EntityService entityService = ApplicationManager.getEntityService();
+        EntityList releases = entityService.query(query);*/
 
-        try {
+        //restClient.login();
 
-                restClient.login();
 
-            // check for at least ALM 11
-            RestService.getForString(restClient, "defects?query={0}", encode("{id[0]}"));
-
-            try {
-                InputStream is = restClient.getForStream("customization/extensions");
-
-                *//*return checkServerType(ProjectExtensionsList.create(is));*//*
-            } catch (HttpClientErrorException e){
-               *//* if(e.getHttpStatus() == HttpStatus.SC_NOT_FOUND) {
-                    return checkServerTypeOldStyle(restClient);
-                }*//*
-                throw e;
-            }
-        } catch(HttpClientErrorException e) {
-         *//*   if(e.getHttpStatus() == HttpStatus.SC_UNAUTHORIZED) {
-                throw new AuthenticationFailed();
-            } else {
-                throw new RuntimeException("Failed to connect to HP ALM: " + handleGenericException(restClient, restClient.getDomain(), restClient.getProject()));
-            }*//*
-            throw e;
-        } catch(Exception e) {
-
-            *//*throw new RuntimeException("Failed to connect to HP ALM: " + handleGenericException(restClient, restClient.getDomain(), restClient.getProject()));*//*
-        } finally {
-         *//*   if(loginLogout) {
-                RestService.logout(restClient);
-            }*//*
-        }*/
 
 
         Dialog alertDialog = new AlertDialog.Builder(this).
@@ -141,7 +141,7 @@ public class LoginActivity extends ActionBarActivity {
                 restClient.login();
             }
             // check for at least ALM 11
-            RestService.getForString(restClient, "defects?query={0}", encode("{id[0]}"));
+            //RestService.getForString(restClient, "defects?query={0}", encode("{id[0]}"));
 
             try {
                 InputStream is = restClient.getForStream("customization/extensions");

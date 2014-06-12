@@ -27,7 +27,15 @@ import com.hp.alm.ali.idea.ui.combo.LazyComboBoxModel;*/
 
 import java.util.List;
 
-public interface ServerStrategy  {
+public interface ServerStrategy extends EntityQueryProcessor{
+
+    List<Relation> getRelationList(String entityType);
+
+    boolean hasSecondLevelDefectLink();
+
+    List<String> getCompoundEntityTypes(String entityType);
+
+    void fixMetadata(Metadata metadata);
 
     /*LazyComboBoxModel getUserModel();
 

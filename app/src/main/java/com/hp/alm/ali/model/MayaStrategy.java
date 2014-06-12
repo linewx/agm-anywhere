@@ -16,6 +16,7 @@
 
 package com.hp.alm.ali.model;
 
+import com.hp.alm.ali.model.type.*;
 /*import com.hp.alm.ali.idea.action.ActionUtil;
 import com.hp.alm.ali.idea.cfg.EntityFields;
 import com.hp.alm.ali.idea.content.AliContent;
@@ -46,8 +47,174 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;*/
 
 import java.util.*;
+import com.hp.alm.ali.entity.EntityQuery;
 
 public class MayaStrategy implements ServerStrategy {
+
+    @Override
+    public List<Relation> getRelationList(String entityType) {
+        if("defect".equals(entityType)) {
+            return relationList("requirement", "test-set");
+        }
+
+        if("requirement".equals(entityType)) {
+            return relationList("release");
+        }
+
+        return new ArrayList<Relation>();
+    }
+
+    protected List<Relation> relationList(String ... entityTypes) {
+        ArrayList<Relation> relations = new ArrayList<Relation>(entityTypes.length);
+        for(String entityType: entityTypes) {
+            relations.add(new Relation(entityType));
+        }
+        return relations;
+    }
+
+    @Override
+    public boolean hasSecondLevelDefectLink() {
+        return true;
+    }
+
+    @Override
+    public EntityQuery preProcess(EntityQuery query) {
+        EntityQuery clone = query.clone();
+
+        // suppress client-side virtual fields
+        LinkedHashMap<String,Integer> columns = clone.getColumns();
+        boolean hasVirtual = false;
+        for(Iterator<String> it = columns.keySet().iterator(); it.hasNext(); ) {
+            if(it.next().startsWith("virtual:")) {
+                it.remove();
+                hasVirtual = true;
+            }
+        }
+        if(hasVirtual) {
+            clone.setColumns(columns);
+        }
+
+        if(!clone.getColumns().isEmpty()) {
+            // when explicitly listing columns explicitly, add those implicitly required
+            if("build-artifact".equals(query.getEntityType())) {
+                // mandatory otherwise server fails to respond (needed for virtual field calculation)
+                clone.addColumn("build", 1);
+                clone.addColumn("path", 1);
+            } else if("attachment".equals(query.getEntityType())) {
+                // following are needed for the action context construction
+                clone.addColumn("name", 1);
+                clone.addColumn("parent-type", 1);
+                clone.addColumn("parent-id", 1);
+                clone.addColumn("file-size", 1); // this one should be queried
+            } else if("defect-link".equals(query.getEntityType())) {
+                // following are needed for the action context construction
+                clone.addColumn("first-endpoint-id", 1);
+                clone.addColumn("second-endpoint-id", 1);
+                clone.addColumn("second-endpoint-type", 1);
+                clone.addColumn("second-endpoint-name", 1);
+                clone.addColumn("second-endpoint-status", 1);
+            } else if("changeset".equals(query.getEntityType())) {
+                // needed for ShowAffectedPathsAction
+                clone.addColumn("rev", 1);
+            } else if("changeset-file".equals(query.getEntityType())) {
+                // workaround for ALM server issue: query fails unless following fields are present
+                clone.addColumn("path", 1);
+                clone.addColumn("revision", 1);
+                clone.addColumn("operation", 1);
+                clone.addColumn("file-type", 1);
+            }
+        }
+
+        return clone;
+    }
+
+    @Override
+    public List<String> getCompoundEntityTypes(String entityType) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void fixMetadata(Metadata metadata) {
+        fixMetadataInherited(metadata);
+
+        // following are supported in Horizon (don't inherit them)
+        if("defect-link".equals(metadata.getEntityType())) {
+            metadata.getField("link-type").setCanFilter(false);
+            metadata.getField("comment").setCanFilter(false);
+        }
+    }
+
+    protected void fixMetadataInherited(Metadata metadata) {
+        if("build-instance".equals(metadata.getEntityType())) {
+            // build status is enum although it is not defined as such
+            metadata.getField("status").setClazz(BuildStatusType.class);
+
+            // present human readable value instead of non-descriptive number
+            metadata.getField("duration").setClazz(BuildDurationType.class);
+
+            // percent value
+            metadata.getField("test-success").setClazz(PercentType.class);
+
+            metadata.getField("release").setReferencedType("release");
+            metadata.getField("type").setReferencedType("build-type");
+        }
+
+        if("build-artifact".equals(metadata.getEntityType())) {
+            // reference to enclosing build instance
+            metadata.getField("build").setReferencedType("build-instance");
+        }
+
+        if("requirement".equals(metadata.getEntityType())) {
+            metadata.getField("type-id").setClazz(RequirementTypeType.class);
+            metadata.getField("target-rel").setReferencedType("release");
+            metadata.getField("target-rel").setClazz(TargetReleaseType.class);
+            metadata.getField("target-rcyc").setReferencedType("release-cycle");
+            metadata.getField("target-rcyc").setClazz(TargetReleaseCycleType.class);
+        }
+
+        if("defect".equals(metadata.getEntityType())) {
+            metadata.getField("target-rel").setReferencedType("release");
+            metadata.getField("target-rcyc").setReferencedType("release-cycle");
+            metadata.getField("detected-in-rel").setReferencedType("release");
+            metadata.getField("detected-in-rcyc").setReferencedType("release-cycle");
+        }
+
+        if("defect-link".equals(metadata.getEntityType())) {
+            metadata.getField("second-endpoint-type").setCanFilter(false);
+
+            // avoid resolving the entity ID field, there is dedicated column for it
+            metadata.getField("first-endpoint-id").setReferencedType(null);
+
+            // avoid volatile columns that change semantics based on query context
+            metadata.removeField("second-endpoint-name");
+            metadata.removeField("second-endpoint-status");
+
+            // status of linked entity
+            Field statusField = new Field("virtual:linked-status", "Entity Status");
+            statusField.setClazz(DefectLinkStatusType.class);
+            metadata.addField(statusField);
+
+            // name of of linked entity
+            Field nameField = new Field("virtual:linked-name", "Entity Name");
+            nameField.setClazz(DefectLinkIdType.class);
+            metadata.addField(nameField);
+
+            // ID of of linked entity
+            Field idField = new Field("virtual:linked-id", "Entity ID");
+            idField.setClazz(DefectLinkIdType.class);
+            metadata.addField(idField);
+
+            // type of of linked entity
+            Field typeField = new Field("virtual:linked-type", "Entity Type");
+            typeField.setClazz(DefectLinkTypeType.class);
+            metadata.addField(typeField);
+        }
+
+        if("attachment".equals(metadata.getEntityType())) {
+            metadata.getField("description").setClazz(PlainTextType.class);
+            metadata.getField("file-size").setClazz(FileSizeType.class);
+        }
+    }
 
     /*private static Map<String, String> developmentAliasMap;
     static  {

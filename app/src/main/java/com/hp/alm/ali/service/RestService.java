@@ -17,12 +17,17 @@
 package com.hp.alm.ali.service;
 
 
+import com.hp.alm.ali.manager.StrategyManager;
 import com.hp.alm.ali.rest.client.AliRestClientFactory;
 import com.hp.alm.ali.rest.client.RestClient;
 import com.hp.alm.ali.rest.client.RestClientFactory;
 import com.hp.alm.ali.rest.client.exception.AuthenticationFailureException;
 
+
 import com.hp.alm.ali.rest.client.ResultInfo;
+
+import com.hp.alm.ali.model.ServerStrategy;
+import com.hp.alm.ali.manager.ApplicationManager;
 
 /*
 import javax.swing.event.HyperlinkEvent;*/
@@ -37,6 +42,7 @@ public class RestService{
     private static RestClientFactory factory = AliRestClientFactory.getInstance();
     private RestClient restClient;
     private ServerType serverType = ServerType.NONE;
+
     /*private ServerType serverType = ServerType.NONE;
     volatile private RestClient restClient;
     private WeakListeners<RestListener> listeners;
@@ -107,7 +113,7 @@ public class RestService{
 
 
     public synchronized RestClient getRestClient() {
-/*        if(restClient == null) {
+       /* if(restClient == null) {
             restClient = createRestClient(projConf);
         }*/
         return restClient;
@@ -190,6 +196,18 @@ public class RestService{
             wait();
         }
         return serverType;
+    }
+
+    public void setServerType(ServerType serverType) {
+        synchronized (this) {
+            this.serverType = serverType;
+            notifyAll();
+        }
+        //fireServerTypeEvent();
+    }
+
+    public synchronized ServerStrategy getServerStrategy() {
+        return StrategyManager.getServerStrategy(serverType.getClazz().toString());
     }
 
 
