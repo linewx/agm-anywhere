@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:alpha="0.9">
 
-    <!--     <LinearLayout
+         <LinearLayout
            android:id="@+id/ll_exit"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
@@ -44,12 +44,12 @@
             android:layout_margin="10dp"
             android:textColor="@color/blue"
             android:textSize="16sp"
-            android:text="@string/app_cancle"
+            android:text="@string/app_cancel"
             android:gravity="center"
             android:background="@drawable/pop_bg"/>
         <View
             android:layout_below="@id/app_cancle"
             android:layout_height="1dp"
             android:layout_width="match_parent"
-            android:layout_marginTop="5dp"/>-->
+            android:layout_marginTop="5dp"/>
 </RelativeLayout>

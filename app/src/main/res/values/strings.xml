@@ -8,5 +8,40 @@
     <string name="et_password_hint">Password</string>
     <string name="login">Sign in</string>
     <string name="register">Register</string>
+    <string name="app_cancel">Cancel</string>
+    <string name="app_change_user">Change user</string>
+    <string name="app_exit_user">sign out</string>
+    <string name="cnews">Message</string>
+    <string name="call">Phone</string>
+    <string name="user_time">User time</string>
+    <string name="user_name">User name</string>
+    <string name="user_feel">User feel</string>
+    <string name="pop_chat">pop chat</string>
+    <string name="pop_sangzhao">pop sangzhao</string>
+    <string name="pop_camera">pop camera</string>
+    <string name="pop_scan">pop scan</string>
+    <string name="group">group</string>
+    <string name="all">all</string>
+    <string name="no_data">No data</string>
 
+    <!-- Refresh -->
+    <string name="p2refresh_head_load_more">加载更多</string>
+    <string name="p2refresh_end_load_more">更    多</string>
+    <string name="p2refresh_end_click_load_more">点击加载</string>
+    <string name="p2refresh_release_refresh">松开立即刷新</string>
+    <string name="p2refresh_pull_to_refresh">下拉刷新</string>
+    <string name="p2refresh_doing_head_refresh">正在刷新&#8230;</string>
+    <string name="p2refresh_doing_end_refresh">加载中&#8230;</string>
+    <string name="p2refresh_refresh_lasttime">最近更新&#160;&#058;&#160;</string>
+
+    <string name="recentchat">最近聊天</string>
+    <string name="choose_constact">选择联系人</string>
+    <string name="search">请输入关键字</string>
+    <string name="dynamic">动态</string>
+    <string name="mime">我</string>
+    <string name="tv_newfriend">新朋友</string>
+    <string name="tv_tongxunlu">通讯录</string>
+    <string name="tv_friend">QQ好友</string>
+    <string name="tv_search">搜索</string>
+    <string name="tv_loading">加载</string>
 </resources>

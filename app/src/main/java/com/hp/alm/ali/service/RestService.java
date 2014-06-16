@@ -43,6 +43,17 @@ public class RestService{
     private RestClient restClient;
     private ServerType serverType = ServerType.NONE;
 
+    private static RestService restService = new RestService();
+
+    private RestService() {
+
+    }
+
+    public static RestService getInstance() {
+        return restService;
+    }
+
+
     /*private ServerType serverType = ServerType.NONE;
     volatile private RestClient restClient;
     private WeakListeners<RestListener> listeners;
@@ -82,8 +93,8 @@ public class RestService{
         return createRestClient(conf.getLocation(), conf.getDomain(), conf.getProject(), conf.getUsername(), conf.getPassword(), RestClient.SessionStrategy.AUTO_LOGIN);
     }*/
 
-    public static RestClient createRestClient(String location, String domain, String project, String username, String password, RestClient.SessionStrategy strategy) {
-        RestClient restClient = factory.create(location, domain, project, username, password, strategy);
+    public RestClient createRestClient(String location, String domain, String project, String username, String password, RestClient.SessionStrategy strategy) {
+        restClient = factory.create(location, domain, project, username, password, strategy);
         restClient.setEncoding(null);
         restClient.setTimeout(10000);
         /*
@@ -207,7 +218,8 @@ public class RestService{
     }
 
     public synchronized ServerStrategy getServerStrategy() {
-        return StrategyManager.getServerStrategy(serverType.getClazz().toString());
+        StrategyManager strategyManager = StrategyManager.getInstance();
+        return strategyManager.getServerStrategy(serverType.getClazz().getSimpleName());
     }
 
 

@@ -649,6 +649,8 @@ public class AliRestClient implements RestClient {
             if(hasQcSession) {
                 //status = httpClient.execute(method);
                 //status = new DefaultHttpClient().execute(method);
+                //HttpClient testClient = new DefaultHttpClient();
+                //testClient.execute(method);
                 status = httpClient.execute(method);
                 statusCode = status.getStatusLine().getStatusCode();
                 writeResponse(resultInfo, status, !doNotWriteForStatuses.contains(statusCode), method);

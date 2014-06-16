@@ -96,29 +96,19 @@ public class LoginActivity extends ActionBarActivity {
         //EditText project = (EditText) findViewById(R.id.project);
 
 
-        /*RestService restService = ApplicationManager.getRestService();
+        RestService restService = ApplicationManager.getRestService();
         RestClient restClient = restService.createRestClient("https://agilemanager-int.saas.hp.com/agm",
                 "t604331885_hp_com",
                 "MaaS",
-                "ganlin.lu@hp.com",
-                "RainLu.1981",
-                RestClient.SessionStrategy.NONE);*/
-
-        RestClientFactory factory = AliRestClientFactory.getInstance();
-        RestClient restClient = factory.create("https://agilemanager-int.saas.hp.com/agm",
-                "t604331885_hp_com",
-                "MaaS",
-                "ganlin.lu@hp.com",
-                "RainLu.1981",
+                username.toString(),
+                password.toString(),
                 RestClient.SessionStrategy.NONE);
-        restClient.setEncoding(null);
-        restClient.setTimeout(10000);
 
-        ServerType serverType = getServerType(restClient, true);
+        restService.setServerType(getServerType(restClient, true));
 
-/*        EntityQuery query = new EntityQuery("release");
+        EntityQuery query = new EntityQuery("release");
         EntityService entityService = ApplicationManager.getEntityService();
-        EntityList releases = entityService.query(query);*/
+        EntityList releases = entityService.query(query);
 
         //restClient.login();
 
@@ -127,7 +117,7 @@ public class LoginActivity extends ActionBarActivity {
 
         Dialog alertDialog = new AlertDialog.Builder(this).
                 setTitle("login information").
-                setMessage( serverType.name()).
+                setMessage("Hello").
                 setIcon(R.drawable.ic_launcher).
                 create();
         alertDialog.show();

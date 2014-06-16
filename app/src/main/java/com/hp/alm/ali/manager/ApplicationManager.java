@@ -20,7 +20,7 @@ public class ApplicationManager {
     private static final MetadataSimpleService metadataSimpleService;
 
     static {
-        restService = new RestService();
+        restService = RestService.getInstance();
         metadataSimpleService = new MetadataSimpleService();
         metadataService = new MetadataService(metadataSimpleService, restService);
         translateService = new TranslateService();
