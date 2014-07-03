@@ -1,5 +1,7 @@
 package com.linewx.maashelper.app;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.renderscript.RSRuntimeException;
 import android.support.v7.app.ActionBarActivity;
@@ -12,6 +14,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.hp.alm.ali.rest.client.AliRestClientFactory;
 import com.hp.alm.ali.rest.client.RestClient;
 import com.hp.alm.ali.rest.client.RestClientFactory;
@@ -32,27 +35,39 @@ import com.hp.alm.ali.service.EntityService;
 
 
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends Activity{
     private Button mLogin;
+
+    private EditText etUserName;
+    private EditText etPassword;
+    private TextView tvLoginInfo;
+
+    private final String LOCATION = "https://agilemanager-int.saas.hp.com/agm";
+    private final String DOMAIN="t604331885_hp_com";
+    private final String PROJECT="MaaS";
+
+    private Context context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if (android.os.Build.VERSION.SDK_INT > 9)
-        {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-        }
+
 
         mLogin=(Button) findViewById(R.id.login);
         mLogin.setOnClickListener(loginOnClickListener);
 
+        initView();
+
+        context = this;
     }
 
 
-    @Override
+
+
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -70,15 +85,18 @@ public class LoginActivity extends ActionBarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }*/
+
+    public void initView() {
+        etUserName = (EditText) findViewById(R.id.account);
+        etPassword = (EditText) findViewById(R.id.password);
+        tvLoginInfo = (TextView) findViewById(R.id.login_info);
+        //EditText location = (EditText) findViewById(R.id.location);
+        //EditText domain = (EditText) findViewById(R.id.domain);
+        //EditText project = (EditText) findViewById(R.id.project);
     }
 
-    public static String encode(String val) {
-        try {
-            return URLEncoder.encode(val, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            return val;
-        }
-    }
+
 
     private View.OnClickListener loginOnClickListener=new View.OnClickListener() {
 
@@ -88,39 +106,47 @@ public class LoginActivity extends ActionBarActivity {
 
         }
     };
+
     public void login(View source) {
-        //EditText location = (EditText) findViewById(R.id.location);
-        EditText username = (EditText) findViewById(R.id.account);
-        EditText password = (EditText) findViewById(R.id.password);
-        //EditText domain = (EditText) findViewById(R.id.domain);
-        //EditText project = (EditText) findViewById(R.id.project);
+    tvLoginInfo.setVisibility(View.INVISIBLE);
 
-
+    if (etUserName.getText().toString().trim().equals("")) {
+        tvLoginInfo.setText("please input account");
+        tvLoginInfo.setVisibility(View.VISIBLE);
+    }else if(etPassword.getText().toString().trim().equals("")) {
+        tvLoginInfo.setText("Please input password");
+        tvLoginInfo.setVisibility(View.VISIBLE);
+    }else {
         RestService restService = ApplicationManager.getRestService();
-        RestClient restClient = restService.createRestClient("https://agilemanager-int.saas.hp.com/agm",
-                "t604331885_hp_com",
-                "MaaS",
-                username.toString(),
-                password.toString(),
-                RestClient.SessionStrategy.NONE);
+        /*RestClient restClient = restService.createRestClient(LOCATION, DOMAIN, PROJECT, etUserName.toString(),
+                etPassword.toString(), RestClient.SessionStrategy.NONE);*/
+
+        RestClient restClient = restService.createRestClient(LOCATION, DOMAIN, PROJECT, "guest@test.com",
+                "password", RestClient.SessionStrategy.NONE);
 
         restService.setServerType(getServerType(restClient, true));
 
-        EntityQuery query = new EntityQuery("release");
+        Intent intent = new Intent(context, MainActivity.class);
+        startActivity(intent);
+        finish();
+
+/*        EntityQuery query = new EntityQuery("release");
         EntityService entityService = ApplicationManager.getEntityService();
-        EntityList releases = entityService.query(query);
+        EntityList releases = entityService.query(query);*/
+    }
+
 
         //restClient.login();
 
 
 
 
-        Dialog alertDialog = new AlertDialog.Builder(this).
+       /* Dialog alertDialog = new AlertDialog.Builder(this).
                 setTitle("login information").
                 setMessage("Hello").
                 setIcon(R.drawable.ic_launcher).
                 create();
-        alertDialog.show();
+        alertDialog.show();*/
 
 
     }

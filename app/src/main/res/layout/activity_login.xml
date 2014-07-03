@@ -2,7 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
-
+    <TextView
+            android:id="@+id/login_info"
+            android:layout_height="50dp"
+            android:layout_width="match_parent"
+            android:layout_margin="20dp"
+            android:text="@string/user_name"
+            android:layout_centerHorizontal="true"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:background="@drawable/login_info"
+            />
     <ImageView
             android:id="@+id/login_picture"
             android:layout_height="80dp"
@@ -36,10 +47,10 @@
                     android:hint="@string/et_account_hint"
                     android:background="@drawable/login_et_bg"
                     android:layout_margin="2dp"/>
-            <View
+            <!--<View
                     android:layout_height="0.5dp"
                     android:layout_width="match_parent"
-                    android:background="@color/devide_line"/>
+                    android:background="@color/devide_line"/>-->
             <EditText
                     android:id="@+id/password"
                     android:layout_height="50dp"
@@ -65,19 +76,7 @@
     </RelativeLayout>
 
 
-<!--    <com.linewx.maashelper.app.view.TextURLView
-            android:id="@+id/tv_forget_password"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="20dp"
-            android:text="@string/forget_password"
-            android:textSize="18sp"
-            android:textColor="@color/blue"/>-->
-
-    <Button
+<!--    <Button
             android:id="@+id/register"
             android:layout_height="40dp"
             android:layout_width="100dp"
@@ -88,6 +87,6 @@
             android:layout_marginRight="20dp"
             android:background="@drawable/register_user_btn"
             android:textColor="@color/blue"
-            android:textSize="16sp"/>
+            android:textSize="16sp"/>-->
 
 </RelativeLayout>

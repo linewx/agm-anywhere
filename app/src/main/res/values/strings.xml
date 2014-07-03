@@ -44,4 +44,18 @@
     <string name="tv_friend">QQ好友</string>
     <string name="tv_search">搜索</string>
     <string name="tv_loading">加载</string>
+
+    <!-- story -->
+    <string name="story_status">Status</string>
+    <string name="story_name">Name</string>
+    <string name="story_owner">Owner</string>
+    <!-- tab -->
+    <string name="story_detail">Detail</string>
+    <string name="story_task">Task</string>
+    <string name="story_attachment">Attachment</string>
+
+    <!-- tab -->
+    <string name="tab_story">Spring</string>
+    <string name="tab_task">Task</string>
+    <string name="tab_backlog">Backlog</string>
 </resources>

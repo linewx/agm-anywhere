@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/whites" >
+
+    <RelativeLayout
+        android:id="@+id/story_item"
+        android:layout_width="match_parent"
+        android:layout_height="65dp">
+
+        <TextView
+            android:id="@+id/story_status"
+            android:layout_height="20dp"
+            android:layout_width="50dp"
+            android:background="@drawable/login_picture_bg"
+            android:contentDescription="@string/app_name"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:text="@string/user_name"
+            />
+
+<!--        <TextView
+            android:id="@+id/user_time"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="@string/user_time"
+            android:textColor="@color/gray_font"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"/>-->
+
+        <LinearLayout
+            android:id="@+id/ll_news"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@id/user_time"
+            android:layout_toRightOf="@id/story_status"
+            android:orientation="vertical" 
+            android:layout_marginLeft="5dp">
+
+            <TextView
+                android:id="@+id/story_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/story_name"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/story_owner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@string/story_owner"
+                android:textColor="@color/gray_font"
+                android:textSize="16sp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

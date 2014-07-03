@@ -1,23 +1,33 @@
 package com.linewx.maashelper.app;
 
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import com.hp.alm.ali.model.Entity;
 import com.linewx.maashelper.app.adapter.ReleaseFragmentAdapter;
+import com.linewx.maashelper.app.adapter.StoryFragmentAdapter;
 
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements OnClickListener {
-
+public class StoryActivity extends FragmentActivity implements ActionBar.TabListener,OnClickListener{
+    private Resources resources;
+    private ActionBar actionBar;
     ViewPager mViewPager;
     private LinearLayout linearLayout1;
     private TextView textView1, textView2, textView3;
@@ -25,10 +35,69 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
     private ImageView imageView;
     private int textViewW = 0;
     private List<View> listViews;
-    private Resources resources;
     private View view1, view2, view3;
+    private Entity story;
+
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_story);
+        resources = this.getResources();
+
+        actionBar = getActionBar();
+        actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        initControl();
+        initViewPager();
+        InitTextView();
+        InitImageView();
+
+/*        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        actionBar.addTab(actionBar.newTab().setText("Detail").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("Tasks").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("Attachments").setTabListener(this));*/
+
+        //get bundle data
+        Intent intent = getIntent();
+        Bundle data = intent.getExtras();
+        story = (Entity)data.getSerializable("release");
+    }
+
+    public Entity getStory() {
+        return story;
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -37,7 +106,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
         initViewPager();
         InitTextView();
         InitImageView();
-    }
+    }*/
 
     private void initControl() {
         imageView = (ImageView) findViewById(R.id.cursor);
@@ -48,11 +117,8 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 
     /* ��ʼ��ViewPager */
     private void initViewPager() {
-
-
         mViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
-        mViewPager.setAdapter(new ReleaseFragmentAdapter(getSupportFragmentManager()));
-
+        mViewPager.setAdapter(new StoryFragmentAdapter(getSupportFragmentManager()));
     }
 
 
@@ -60,9 +126,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 
 
     private void InitTextView() {
-        textView1 = (TextView) findViewById(R.id.story_tab);
-        textView2 = (TextView) findViewById(R.id.task_tab);
-        textView3 = (TextView) findViewById(R.id.backlog_tab);
+        textView1 = (TextView) findViewById(R.id.story_detail_tab);
+        textView2 = (TextView) findViewById(R.id.story_task_tab);
+        textView3 = (TextView) findViewById(R.id.story_attachment_tab);
 
         textView1.setOnClickListener(new MyOnClickListener(0));
         textView2.setOnClickListener(new MyOnClickListener(1));

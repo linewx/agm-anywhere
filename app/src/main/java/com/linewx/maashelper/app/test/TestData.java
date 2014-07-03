@@ -2,6 +2,7 @@ package com.linewx.maashelper.app.test;
 
 import com.linewx.maashelper.app.bean.RecentChat;
 import com.linewx.maashelper.app.utils.FileUtil;
+import com.hp.alm.ali.model.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,4 +39,16 @@ public class TestData {
 		
 		return maps;
 	}
+
+    public static List<Entity> getStories(){
+        List<Entity> stories = new ArrayList<Entity>();
+        Entity story1 = new Entity("story");
+        story1.setProperty("Name", "As a contract mgr, I want to see vendor/brand grid in one line tall");
+        story1.setProperty("Status", "New");
+        story1.setProperty("Owner", "guest@test.com");
+
+        stories.add(story1);
+
+        return stories;
+    }
 }

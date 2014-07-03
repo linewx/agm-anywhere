@@ -18,6 +18,8 @@ public class ApplicationManager {
     private static final EntityService entityService;
     private static final MetadataService metadataService;
     private static final MetadataSimpleService metadataSimpleService;
+    private static final SprintService sprintService;
+    private static final TeamMemberService teamMemberService;
 
     static {
         restService = RestService.getInstance();
@@ -25,6 +27,8 @@ public class ApplicationManager {
         metadataService = new MetadataService(metadataSimpleService, restService);
         translateService = new TranslateService();
         entityService = new EntityService(restService, metadataService);
+        sprintService = new SprintService(entityService, restService);
+        teamMemberService = new TeamMemberService(entityService);
     }
 
     public static RestService getRestService() {
@@ -41,6 +45,14 @@ public class ApplicationManager {
 
     public static EntityService getEntityService() {
         return entityService;
+    }
+
+    public static SprintService getSprintService() {
+        return sprintService;
+    }
+
+    public static TeamMemberService getTeamMemberService() {
+        return teamMemberService;
     }
 
 

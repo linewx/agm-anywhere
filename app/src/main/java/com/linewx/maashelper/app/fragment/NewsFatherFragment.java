@@ -2,7 +2,6 @@ package com.linewx.maashelper.app.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -88,8 +87,8 @@ public class NewsFatherFragment extends Fragment {
 					mTitleBarView.getTitleRight().setEnabled(true);
 					
 					FragmentTransaction ft=getFragmentManager().beginTransaction();
-					NewsFragment newsFragment=new NewsFragment();
-					ft.replace(R.id.child_fragment, newsFragment,NewsFatherFragment.TAG);
+					ReleaseBacklogFragment storyFragment=new ReleaseBacklogFragment();
+					ft.replace(R.id.child_fragment, storyFragment,NewsFatherFragment.TAG);
 					//ft.addToBackStack(TAG);
 					ft.commit();
 				}

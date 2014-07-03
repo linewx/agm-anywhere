@@ -1,5 +1,8 @@
 package com.hp.alm.ali.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * Created by lugan on 6/9/2014.
  */
@@ -32,5 +35,13 @@ public class CharUtils {
         }
 
         return Character.toLowerCase(a);
+    }
+
+    public static String encode(String val) {
+        try {
+            return URLEncoder.encode(val, "UTF-8").replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            return val;
+        }
     }
 }

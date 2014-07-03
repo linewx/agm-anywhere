@@ -9,29 +9,33 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import com.hp.alm.ali.model.Entity;
+import com.hp.alm.ali.model.parser.EntityList;
 import com.linewx.maashelper.app.AsyncTaskBase;
 import com.linewx.maashelper.app.R;
 import com.linewx.maashelper.app.StoryActivity;
-import com.linewx.maashelper.app.adapter.NewsAdapter;
-import com.linewx.maashelper.app.bean.RecentChat;
-import com.linewx.maashelper.app.test.TestData;
+import com.linewx.maashelper.app.adapter.ReleaseBacklogAdapter;
 import com.linewx.maashelper.app.view.CustomListView;
 import com.linewx.maashelper.app.view.CustomListView.OnRefreshListener;
 import com.linewx.maashelper.app.view.LoadingView;
 
+import com.hp.alm.ali.manager.ApplicationManager;
+
+
+
+
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-public class NewsFragment extends Fragment {
-	private static final String TAG = "NewsFragment";
+public class ReleaseBacklogFragment extends Fragment {
+	private static final String TAG = "StoriesFragment";
 	private Context mContext;
 	private View mBaseView;
 	private CustomListView mCustomListView;
 	private LoadingView mLoadingView;
 	private View mSearchView;
-	private NewsAdapter adapter;
-	private LinkedList<RecentChat> chats = new LinkedList<RecentChat>();
+	private ReleaseBacklogAdapter adapter;
+	private EntityList releaseBacklog = EntityList.empty();
 
 
 
@@ -44,6 +48,17 @@ public class NewsFragment extends Fragment {
 		findView();
 		init();
 
+        mCustomListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                Entity entity= (Entity) parent.getAdapter().getItem(position);
+                Bundle data = new Bundle();
+                data.putSerializable("release", entity);
+                Intent intent = new Intent(mContext, StoryActivity.class);
+                intent.putExtras(data);
+                startActivity(intent);
+            }
+        });
 
 		return mBaseView;
 	}
@@ -52,11 +67,10 @@ public class NewsFragment extends Fragment {
 		mCustomListView = (CustomListView) mBaseView.findViewById(R.id.lv_news);
 		mLoadingView = (LoadingView) mBaseView.findViewById(R.id.loading);
 
-
 	}
 
 	private void init() {
-		adapter = new NewsAdapter(mContext, chats, mCustomListView);
+		adapter = new ReleaseBacklogAdapter(mContext, releaseBacklog, mCustomListView);
 		mCustomListView.setAdapter(adapter);
 
 		mCustomListView.addHeaderView(mSearchView);
@@ -71,7 +85,7 @@ public class NewsFragment extends Fragment {
 	}
 
 	private class NewsAsyncTask extends AsyncTaskBase {
-		List<RecentChat> recentChats = new ArrayList<RecentChat>();
+		EntityList recentReleaseBacklog = null;
 
 		public NewsAsyncTask(LoadingView loadingView) {
 			super(loadingView);
@@ -80,8 +94,8 @@ public class NewsFragment extends Fragment {
 		@Override
 		protected Integer doInBackground(Integer... params) {
 			int result = -1;
-			recentChats = TestData.getRecentChats();
-			if (recentChats.size() > 0) {
+            recentReleaseBacklog = ApplicationManager.getSprintService().getStories();
+			if (recentReleaseBacklog.size() > 0) {
 				result = 1;
 			}
 			return result;
@@ -90,7 +104,7 @@ public class NewsFragment extends Fragment {
 		@Override
 		protected void onPostExecute(Integer result) {
 			super.onPostExecute(result);
-			chats.addAll(recentChats);
+			releaseBacklog.addAll(recentReleaseBacklog);
 			adapter.notifyDataSetChanged();
 		}
 
@@ -102,21 +116,21 @@ public class NewsFragment extends Fragment {
 	}
 
 	private class AsyncRefresh extends
-            AsyncTask<Integer, Integer, List<RecentChat>> {
-		private List<RecentChat> recentchats = new ArrayList<RecentChat>();
+            AsyncTask<Integer, Integer, List<Entity>> {
+		private List<Entity> recentStories = new ArrayList<Entity>();
 
 		@Override
-		protected List<RecentChat> doInBackground(Integer... params) {
-			recentchats = TestData.getRecentChats();
-			return recentchats;
+		protected List<Entity> doInBackground(Integer... params) {
+            recentStories = ApplicationManager.getSprintService().getStories();
+			return recentStories;
 		}
 
 		@Override
-		protected void onPostExecute(List<RecentChat> result) {
+		protected void onPostExecute(List<Entity> result) {
 			super.onPostExecute(result);
 			if (result != null) {
-				for (RecentChat rc : recentchats) {
-					chats.addFirst(rc);
+				for (Entity rc : recentStories) {
+					releaseBacklog.add(0, rc);
 				}
 				adapter.notifyDataSetChanged();
 				mCustomListView.onRefreshComplete();
@@ -129,5 +143,7 @@ public class NewsFragment extends Fragment {
 		}
 
 	}
+
+
 
 }

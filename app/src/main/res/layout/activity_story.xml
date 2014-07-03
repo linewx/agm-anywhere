@@ -25,35 +25,35 @@
                     android:gravity="center" >
 
                 <TextView
-                        android:id="@+id/story_tab"
+                        android:id="@+id/story_detail_tab"
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/tab_story"
+                        android:text="@string/story_detail"
                         android:textColor="#969696"
                         android:textSize="17dp" />
 
                 <TextView
-                        android:id="@+id/task_tab"
+                        android:id="@+id/story_task_tab"
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="#969696"
-                        android:text="@string/tab_task"
+                        android:text="@string/story_task"
                         android:textSize="17dp" />
 
                 <TextView
-                        android:id="@+id/backlog_tab"
+                        android:id="@+id/story_attachment_tab"
                         android:layout_width="0dp"
                         android:layout_height="fill_parent"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/tab_backlog"
+                        android:text="@string/story_attachment"
                         android:textColor="#969696"
                         android:textSize="17dp" />
             </LinearLayout>
