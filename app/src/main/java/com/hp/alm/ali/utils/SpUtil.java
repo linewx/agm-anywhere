@@ -21,7 +21,8 @@ public class SpUtil {
 	public static SharedPreferences getSharePerference(Context context){
 		return context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
 	}
-	
+
+
 	public static boolean isFirst(SharedPreferences sp){
 		return sp.getBoolean("isFirst", false);
 	}

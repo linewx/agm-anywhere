@@ -1,7 +1,11 @@
 package com.linewx.maashelper.app;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Matrix;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentActivity;
@@ -12,61 +16,63 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.*;
+import com.hp.alm.ali.manager.ApplicationManager;
+import com.hp.alm.ali.model.Entity;
+import com.hp.alm.ali.model.parser.EntityList;
+import com.linewx.maashelper.app.adapter.ReleaseBacklogAdapter;
 import com.linewx.maashelper.app.adapter.ReleaseFragmentAdapter;
+import com.linewx.maashelper.app.view.CustomListView;
+import com.linewx.maashelper.app.view.LoadingView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity implements OnClickListener {
+public class MainActivity extends Activity implements OnClickListener {
 
-    ViewPager mViewPager;
-    private LinearLayout linearLayout1;
-    private TextView textView1, textView2, textView3;
-    private int currIndex = 0;
-    private ImageView imageView;
-    private int textViewW = 0;
-    private List<View> listViews;
-    private Resources resources;
-    private View view1, view2, view3;
+    private CustomListView lvReleaseBacklog;
+    private LoadingView lvLoading;
+    private EntityList releaseBacklog = EntityList.empty();
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        resources = this.getResources();
-        initControl();
-        initViewPager();
-        InitTextView();
-        InitImageView();
+
+        mContext = this;
+        findView();
+        init();
     }
 
-    private void initControl() {
-        imageView = (ImageView) findViewById(R.id.cursor);
-        linearLayout1 = (LinearLayout) findViewById(R.id.linearLayout1);
-        mViewPager = (ViewPager) findViewById(R.id.page_content);
-        mViewPager.setOffscreenPageLimit(2);
+    private void findView() {
+        lvReleaseBacklog = (CustomListView)findViewById(R.id.lv_release_backlog);
+        lvLoading = (LoadingView)findViewById(R.id.loading);
     }
 
-    /* ��ʼ��ViewPager */
-    private void initViewPager() {
+    private void init() {
+        lvReleaseBacklog.setAdapter(new ReleaseBacklogAdapter(this, releaseBacklog));
 
+        lvReleaseBacklog.setOnRefreshListener(new CustomListView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new AsyncRefresh().execute(0);
+            }
+        });
+        lvReleaseBacklog.setCanLoadMore(false);
 
-        mViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
-        mViewPager.setAdapter(new ReleaseFragmentAdapter(getSupportFragmentManager()));
+        lvReleaseBacklog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
+                Entity entity= (Entity) parent.getAdapter().getItem(position);
+                Bundle data = new Bundle();
+                data.putSerializable("release", entity);
+                Intent intent = new Intent(mContext, StoryDetailActivity.class);
+                intent.putExtras(data);
+                startActivity(intent);
+            }
+        });
 
-    }
-
-
-
-
-
-    private void InitTextView() {
-        textView1 = (TextView) findViewById(R.id.story_tab);
-        textView2 = (TextView) findViewById(R.id.task_tab);
-        textView3 = (TextView) findViewById(R.id.backlog_tab);
-
-        textView1.setOnClickListener(new MyOnClickListener(0));
-        textView2.setOnClickListener(new MyOnClickListener(1));
-        textView3.setOnClickListener(new MyOnClickListener(2));
+        new NewsAsyncTask(lvLoading).execute(0);
     }
 
     @Override
@@ -74,115 +80,66 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 
     }
 
-    public class MyPagerAdapter extends PagerAdapter {
-        public List<View> mListViews;
+    private class NewsAsyncTask extends AsyncTaskBase {
+        EntityList recentReleaseBacklog = null;
 
-        public MyPagerAdapter(List<View> mListViews) {
-            this.mListViews = mListViews;
+        public NewsAsyncTask(LoadingView loadingView) {
+            super(loadingView);
         }
 
         @Override
-        public void destroyItem(View arg0, int arg1, Object arg2) {
-            ((ViewPager) arg0).removeView(mListViews.get(arg1));
-        }
-
-        @Override
-        public void finishUpdate(View arg0) {
-        }
-
-        @Override
-        public int getCount() {
-            return mListViews.size();
-        }
-
-        @Override
-        public Object instantiateItem(View arg0, int arg1) {
-            ((ViewPager) arg0).addView(mListViews.get(arg1), 0);
-            return mListViews.get(arg1);
-        }
-
-        @Override
-        public boolean isViewFromObject(View arg0, Object arg1) {
-            return arg0 == (arg1);
-        }
-
-        @Override
-        public void restoreState(Parcelable arg0, ClassLoader arg1) {
-        }
-
-        @Override
-        public Parcelable saveState() {
-            return null;
-        }
-
-        @Override
-        public void startUpdate(View arg0) {
-        }
-    }
-
-    public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
-
-        @Override
-        public void onPageSelected(int arg0) {
-            if (textViewW == 0) {
-                textViewW = textView1.getWidth();
+        protected Integer doInBackground(Integer... params) {
+            int result = -1;
+            recentReleaseBacklog = ApplicationManager.getSprintService().getStories();
+            if (recentReleaseBacklog.size() > 0) {
+                result = 1;
             }
-            Animation animation = new TranslateAnimation(textViewW * currIndex,
-                    textViewW * arg0, 0, 0);
-            currIndex = arg0;
-            animation.setFillAfter(true);
-            animation.setDuration(300);
-            imageView.startAnimation(animation);
-            setTextTitleSelectedColor(arg0);
-            setImageViewWidth(textViewW);
-
+            return result;
         }
 
         @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
+        protected void onPostExecute(Integer result) {
+            super.onPostExecute(result);
+            releaseBacklog.addAll(recentReleaseBacklog);
+            //adapter.notifyDataSetChanged();
         }
 
         @Override
-        public void onPageScrollStateChanged(int arg0) {
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
+
     }
 
-    private void setTextTitleSelectedColor(int arg0) {
-        int count = mViewPager.getChildCount();
-        for (int i = 0; i < count; i++) {
-            TextView mTextView = (TextView) linearLayout1.getChildAt(i);
-            if (arg0 == i) {
-                mTextView.setTextColor(0xffc80000);
-            } else {
-                mTextView.setTextColor(0xff969696);
+    private class AsyncRefresh extends
+            AsyncTask<Integer, Integer, List<Entity>> {
+        private List<Entity> recentStories = new ArrayList<Entity>();
+
+        @Override
+        protected List<Entity> doInBackground(Integer... params) {
+            recentStories = ApplicationManager.getSprintService().getStories();
+            return recentStories;
+        }
+
+        @Override
+        protected void onPostExecute(List<Entity> result) {
+            super.onPostExecute(result);
+            if (result != null) {
+                for (Entity rc : recentStories) {
+                    releaseBacklog.add(0, rc);
+                }
+                //adapter.notifyDataSetChanged();
+                lvReleaseBacklog.onRefreshComplete();
             }
         }
-    }
 
-    private void setImageViewWidth(int width) {
-        if (width != imageView.getWidth()) {
-            LinearLayout.LayoutParams laParams = (LinearLayout.LayoutParams) imageView.getLayoutParams();
-            laParams.width = width;
-            imageView.setLayoutParams(laParams);
-        }
-    }
-
-    private class MyOnClickListener implements OnClickListener {
-        private int index = 0;
-
-        public MyOnClickListener(int i) {
-            index = i;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
 
-        public void onClick(View v) {
-            mViewPager.setCurrentItem(index);
-        }
     }
 
-    private void InitImageView() {
-        Matrix matrix = new Matrix();
-        matrix.postTranslate(0, 0);
-        imageView.setImageMatrix(matrix);
-    }
+
 
 }

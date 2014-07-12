@@ -70,7 +70,7 @@ public class ReleaseBacklogFragment extends Fragment {
 	}
 
 	private void init() {
-		adapter = new ReleaseBacklogAdapter(mContext, releaseBacklog, mCustomListView);
+		adapter = new ReleaseBacklogAdapter(mContext, releaseBacklog);
 		mCustomListView.setAdapter(adapter);
 
 		mCustomListView.addHeaderView(mSearchView);

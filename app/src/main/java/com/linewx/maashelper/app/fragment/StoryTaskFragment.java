@@ -71,7 +71,7 @@ public class StoryTaskFragment extends Fragment {
 	}
 
 	private void init() {
-		adapter = new ReleaseBacklogAdapter(mContext, releaseBacklog, mCustomListView);
+		adapter = new ReleaseBacklogAdapter(mContext, releaseBacklog);
 		mCustomListView.setAdapter(adapter);
 
 		mCustomListView.addHeaderView(mSearchView);
@@ -121,9 +121,10 @@ public class StoryTaskFragment extends Fragment {
 			int result = -1;
             //recentReleaseBacklog = ApplicationManager.getSprintService().getStories();
             recentReleaseBacklog = getProjectTask();
-			if (recentReleaseBacklog.size() > 0) {
+			/*if (recentReleaseBacklog.size() > 0) {
 				result = 1;
-			}
+			}*/
+            result = 1;
 			return result;
 		}
 

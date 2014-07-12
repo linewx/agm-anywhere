@@ -33,7 +33,9 @@ import com.hp.alm.ali.entity.SortOrder;
 import com.hp.alm.ali.manager.ApplicationManager;
 import com.hp.alm.ali.entity.EntityListener;
 
+import com.hp.alm.ali.utils.XmlUtils;
 import org.apache.http.HttpStatus;
+import org.w3c.dom.Element;
 
 import java.io.InputStream;
 import java.util.*;
@@ -283,9 +285,10 @@ public class EntityService {
 
         String xml = "";
         try {
-            xml = entity.toElement(fieldsToUpdate).toString();
+            Element element = entity.toElement(fieldsToUpdate);
+            xml = XmlUtils.getStringFromXml(element, true);
         }catch(Exception e) {
-            //
+            e.printStackTrace();
         }
 
         MyResultInfo result = new MyResultInfo();

@@ -3,48 +3,33 @@ package com.linewx.maashelper.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.renderscript.RSRuntimeException;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.text.TextUtils;
 import android.view.View;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.hp.alm.ali.rest.client.AliRestClientFactory;
+import com.hp.alm.ali.manager.ApplicationManager;
+import com.hp.alm.ali.model.parser.ProjectExtensionsList;
 import com.hp.alm.ali.rest.client.RestClient;
-import com.hp.alm.ali.rest.client.RestClientFactory;
-import com.hp.alm.ali.rest.client.exception.HttpClientErrorException;
-import android.os.StrictMode;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import com.hp.alm.ali.rest.client.exception.AuthenticationFailureException;
+import com.hp.alm.ali.service.RestService;
 import com.hp.alm.ali.service.ServerType;
 
-import com.hp.alm.ali.service.RestService;
-import com.hp.alm.ali.model.parser.ProjectExtensionsList;
-import org.apache.http.HttpStatus;
-import com.hp.alm.ali.manager.*;
-import com.hp.alm.ali.entity.EntityQuery;
-import com.hp.alm.ali.model.parser.EntityList;
-import com.hp.alm.ali.service.EntityService;
+import java.io.InputStream;
 
 
-
-public class LoginActivity extends Activity{
+public class LoginActivity extends Activity {
     private Button mLogin;
 
     private EditText etUserName;
     private EditText etPassword;
-    private TextView tvLoginInfo;
+    private EditText etLocation;
+    private EditText etDomain;
+    private EditText etProject;
+    private ProgressBar pbLoading;
 
-    private final String LOCATION = "https://agilemanager-int.saas.hp.com/agm";
-    private final String DOMAIN="t604331885_hp_com";
-    private final String PROJECT="MaaS";
 
     private Context context;
 
@@ -55,8 +40,7 @@ public class LoginActivity extends Activity{
         setContentView(R.layout.activity_login);
 
 
-
-        mLogin=(Button) findViewById(R.id.login);
+        mLogin = (Button) findViewById(R.id.login);
         mLogin.setOnClickListener(loginOnClickListener);
 
         initView();
@@ -65,75 +49,101 @@ public class LoginActivity extends Activity{
     }
 
 
-
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
-
     public void initView() {
         etUserName = (EditText) findViewById(R.id.account);
         etPassword = (EditText) findViewById(R.id.password);
-        tvLoginInfo = (TextView) findViewById(R.id.login_info);
-        //EditText location = (EditText) findViewById(R.id.location);
-        //EditText domain = (EditText) findViewById(R.id.domain);
-        //EditText project = (EditText) findViewById(R.id.project);
+        etLocation = (EditText) findViewById(R.id.location);
+        etDomain = (EditText) findViewById(R.id.domain);
+        etProject = (EditText) findViewById(R.id.project);
+
+        pbLoading = (ProgressBar) findViewById(R.id.pb_loading);
+
+        //init user & password
+        String user = ApplicationManager.getUserService().getUser();
+        String password = ApplicationManager.getUserService().getPassword();
+        String location = ApplicationManager.getUserService().getLocation();
+        String domain = ApplicationManager.getUserService().getDomain();
+        String project = ApplicationManager.getUserService().getProject();
+
+        if (!TextUtils.isEmpty(user)) {
+            etUserName.setText(user);
+        }
+        if (!TextUtils.isEmpty(password)) {
+            etPassword.setText(password);
+        }
+        if (!TextUtils.isEmpty(location)) {
+            etLocation.setText(location);
+        }
+        if (!TextUtils.isEmpty(domain)) {
+            etDomain.setText(domain);
+        }
+        if (!TextUtils.isEmpty(project)) {
+            etProject.setText(project);
+        }
+
     }
 
 
-
-    private View.OnClickListener loginOnClickListener=new View.OnClickListener() {
+    private View.OnClickListener loginOnClickListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View v) {
             login(v);
-
         }
     };
 
     public void login(View source) {
-    tvLoginInfo.setVisibility(View.INVISIBLE);
 
-    if (etUserName.getText().toString().trim().equals("")) {
-        tvLoginInfo.setText("please input account");
-        tvLoginInfo.setVisibility(View.VISIBLE);
-    }else if(etPassword.getText().toString().trim().equals("")) {
-        tvLoginInfo.setText("Please input password");
-        tvLoginInfo.setVisibility(View.VISIBLE);
-    }else {
-        RestService restService = ApplicationManager.getRestService();
-        /*RestClient restClient = restService.createRestClient(LOCATION, DOMAIN, PROJECT, etUserName.toString(),
-                etPassword.toString(), RestClient.SessionStrategy.NONE);*/
+        if (etUserName.getText().toString().trim().equals("")) {
+/*            tvLoginInfo.setText("please input account");
+            tvLoginInfo.setVisibility(View.VISIBLE);*/
+        } else if (etPassword.getText().toString().trim().equals("")) {
+/*            tvLoginInfo.setText("Please input password");
+            tvLoginInfo.setVisibility(View.VISIBLE);*/
+        } else {
+            //store user & password
+            pbLoading.setVisibility(View.VISIBLE);
+            mLogin.setClickable(false);
+            mLogin.setAlpha(0.5f);
 
-        RestClient restClient = restService.createRestClient(LOCATION, DOMAIN, PROJECT, "guest@test.com",
-                "password", RestClient.SessionStrategy.NONE);
+            ApplicationManager.getUserService().setUser(etUserName.getText().toString());
+            ApplicationManager.getUserService().setPassword(etPassword.getText().toString());
+            ApplicationManager.getUserService().setLocation(etLocation.getText().toString());
+            ApplicationManager.getUserService().setDomain(etDomain.getText().toString());
+            ApplicationManager.getUserService().setProject(etProject.getText().toString());
 
-        restService.setServerType(getServerType(restClient, true));
+            RestService restService = ApplicationManager.getRestService();
 
-        Intent intent = new Intent(context, MainActivity.class);
-        startActivity(intent);
-        finish();
+            try {
+                RestClient restClient = restService.createRestClient(
+                        ApplicationManager.getUserService().getLocation(),
+                        ApplicationManager.getUserService().getDomain(),
+                        ApplicationManager.getUserService().getProject(),
+                        ApplicationManager.getUserService().getUser(),
+                        ApplicationManager.getUserService().getPassword(),
+                        RestClient.SessionStrategy.NONE);
 
-/*        EntityQuery query = new EntityQuery("release");
-        EntityService entityService = ApplicationManager.getEntityService();
-        EntityList releases = entityService.query(query);*/
-    }
+                restClient.login();
+                restService.setServerType(getServerType(restClient));
+                ApplicationManager.getSprintService().init();
+
+                Intent intent = new Intent(context, MainActivity.class);
+                startActivity(intent);
+                finish();
+
+            } catch (AuthenticationFailureException e) {
+                ApplicationManager.getMessageService().show("Authentication failed");
+            } catch (Exception e) {
+                ApplicationManager.getMessageService().show("Connection failed");
+            } finally {
+                pbLoading.setVisibility(View.INVISIBLE);
+                mLogin.setClickable(true);
+                mLogin.setAlpha(1f);
+            }
+
+
+
+        }
 
 
         //restClient.login();
@@ -151,36 +161,9 @@ public class LoginActivity extends Activity{
 
     }
 
-    public static ServerType getServerType(RestClient restClient, boolean loginLogout) throws RuntimeException{
-        try {
-            if(loginLogout) {
-                restClient.login();
-            }
-            // check for at least ALM 11
-            //RestService.getForString(restClient, "defects?query={0}", encode("{id[0]}"));
-
-            try {
-                InputStream is = restClient.getForStream("customization/extensions");
-                return checkServerType(ProjectExtensionsList.create(is));
-            } catch (HttpClientErrorException e){
-                if(e.getHttpStatus() == HttpStatus.SC_NOT_FOUND) {
-                    return checkServerTypeOldStyle(restClient);
-                }
-                throw e;
-            }
-        } catch(HttpClientErrorException e) {
-            if(e.getHttpStatus() == HttpStatus.SC_UNAUTHORIZED) {
-                throw new RuntimeException();
-            } else {
-                throw new RuntimeException("Failed to connect to HP ALM");
-            }
-        } catch(Exception e) {
-            throw new RuntimeException("Failed to connect to HP ALM");
-        } finally {
-            if(loginLogout) {
-                //RestService.logout(restClient);
-            }
-        }
+    public static ServerType getServerType(RestClient restClient) {
+        InputStream is = restClient.getForStream("customization/extensions");
+        return checkServerType(ProjectExtensionsList.create(is));
     }
 
     private static ServerType checkServerType(ProjectExtensionsList projectExtensionsList) {
@@ -201,15 +184,15 @@ public class LoginActivity extends Activity{
             }
         }
 
-        if(qcVersion != null && qcVersion.startsWith("11.5")) {
-            if(aliVersion != null) {
+        if (qcVersion != null && qcVersion.startsWith("11.5")) {
+            if (aliVersion != null) {
                 return ServerType.ALI11_5;
             } else {
                 return ServerType.ALM11_5;
             }
         } else {
             // assume latest version compatibility
-            if(aliVersion != null) {
+            if (aliVersion != null) {
                 return ServerType.ALI12;
             } else {
                 return ServerType.ALM12;

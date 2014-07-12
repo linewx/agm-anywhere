@@ -33,4 +33,11 @@
 
     <color name="remote_connect_text">#FFe78018</color>
     <color name="remote_disconnect_text">#FF901821</color>
+    <color name="gray_background">#ffe3e3e3</color>
+    <color name="InTesting">#ffa864a4</color>
+    <color name="InProgress">#ff52889e</color>
+    <color name="New">#ff61c3e2</color>
+    <color name="Done">#ff8bc33a</color>
+
+
 </resources>

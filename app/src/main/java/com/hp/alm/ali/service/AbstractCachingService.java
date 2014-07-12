@@ -16,13 +16,6 @@
 
 package com.hp.alm.ali.service;
 
-/*import com.hp.alm.ali.idea.rest.ServerTypeListener;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.Transform;
-import com.intellij.util.ui.UIUtil;*/
-
 import com.hp.alm.ali.utils.Pair;
 import com.hp.alm.ali.utils.Transform;
 

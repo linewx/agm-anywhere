@@ -77,11 +77,14 @@ public class InputData {
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
+
             return requestEntity;
         } else if (dataStream != null) {
             return new InputStreamEntity(dataStream, size);
         } else {
             return null;
         }
+
+
     }
 }

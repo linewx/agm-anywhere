@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-                 android:layout_width="match_parent"
-                 android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
     <ImageView
-            android:id="@+id/rbi_avatar"
+            android:id="@+id/task_avatar"
             android:layout_height="40dp"
             android:layout_width="40dp"
             android:background="@drawable/login_picture_bg"
@@ -15,7 +15,7 @@
 
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:layout_toRightOf="@+id/rbi_avatar"
+                  android:layout_toRightOf="@+id/task_avatar"
                   android:orientation="vertical">
         <RelativeLayout
                 android:layout_width="match_parent"
@@ -23,7 +23,7 @@
                 android:orientation="horizontal">
             <TextView
                     android:layout_margin="10dp"
-                    android:id="@+id/rbi_status"
+                    android:id="@+id/task_status"
                     android:layout_width="80dp"
                     android:padding="2dp"
                     android:gravity="center"
@@ -31,14 +31,14 @@
                     android:text="in progress"
                     android:textColor="@color/whites"
                     android:background="@color/blue"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"/>
             <LinearLayout android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
                           android:layout_alignParentRight="true"
-                         android:layout_marginRight="10dp">
+                          android:layout_marginRight="10dp">
 
                 <ImageView
-                        android:id="@+id/iv_start"
+                        android:id="@+id/iv_star"
                         android:layout_marginTop="12dp"
                         android:layout_marginRight="10dp"
                         android:layout_height="16dp"
@@ -47,37 +47,34 @@
                         android:contentDescription="@string/app_name"/>
 
                 <TextView
-                        android:id="@+id/rbi_point"
+                        android:id="@+id/task_estimated"
                         android:layout_marginTop="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"/>
             </LinearLayout>
 
         </RelativeLayout>
 
 
         <TextView
-                android:id="@+id/rbi_name"
+                android:id="@+id/task_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
                 android:text="as a dev, I want to index all fullname into idol. and search from in the global search bar."
                 android:minLines="2"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
         <TextView
-                android:id="@+id/rbi_owner"
+                android:id="@+id/task_assigned"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:padding="10dp"
                 android:textStyle="italic"
                 android:text="owned by developer"
                 />
-
-
-
 
 
     </LinearLayout>

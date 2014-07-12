@@ -115,7 +115,6 @@ public class StoryActivity extends FragmentActivity implements ActionBar.TabList
         mViewPager.setOffscreenPageLimit(2);
     }
 
-    /* ��ʼ��ViewPager */
     private void initViewPager() {
         mViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
         mViewPager.setAdapter(new StoryFragmentAdapter(getSupportFragmentManager()));

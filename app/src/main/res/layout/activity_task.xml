@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-    <com.linewx.maashelper.app.view.CustomListView
-            android:id="@+id/lv_release_backlog"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+        <com.linewx.maashelper.app.view.CustomListView
+            android:id="@+id/lv_tasks"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:cacheColorHint="@android:color/transparent"
             android:fadingEdgeLength="0dp" />
-
-    <com.linewx.maashelper.app.view.LoadingView
+        <com.linewx.maashelper.app.view.LoadingView
             android:id="@+id/loading"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

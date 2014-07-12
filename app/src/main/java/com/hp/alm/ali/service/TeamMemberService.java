@@ -49,17 +49,7 @@ public class TeamMemberService extends AbstractCachingEntityService<Entity> {
     }
 
     public String getTeamId(String username, String releaseId) {
-       /* EntityQuery query = new EntityQuery("team-member");
-        query.addColumn("id", 1);
-        query.addColumn("full-name", 1);
-        query.addColumn("team-id", 1);
-        if (releaseId != null) {
-            query.setValue("team.release-id", releaseId);
-        }
-        query.setValue("name", username);
-        query.setPropertyResolved("team-id", true);
-        query.addOrder("name", SortOrder.ASCENDING);
-        EntityList list = entityService.query(query);*/
+
         EntityQuery query = new EntityQuery("team-member");
         query.addColumn("id", 1);
         query.addColumn("name", 1);

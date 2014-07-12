@@ -17,6 +17,20 @@
 package com.hp.alm.ali.utils;
 
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerException;
+import java.io.StringWriter;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+
 public class XmlUtils {
 
     /**
@@ -28,4 +42,37 @@ public class XmlUtils {
         xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         return xmlFactory;*/
     }
+
+    public static String getStringFromXml(Element validate, Boolean hasHeader) {
+        final String header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        TransformerFactory transFactory = TransformerFactory.newInstance();
+        Transformer transformer = null;
+        try {
+            transformer = transFactory.newTransformer();
+        } catch (TransformerConfigurationException e)
+        {
+            e.printStackTrace();
+        }
+        StringWriter buffer = new StringWriter();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        try {
+            transformer.transform(new DOMSource(validate),new StreamResult(buffer));
+        } catch (TransformerException e)
+        {
+            e.printStackTrace();
+        }
+        String s = buffer.toString();
+        if (hasHeader) {
+            return header + s;
+        }
+        return s;
+    }
+
+    /*public static String getStringFromXmlWithHeader(Element validate) {
+        Document document = validate.getOwnerDocument();
+        DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
+        LSSerializer serializer = domImplLS.createLSSerializer();
+        String str = serializer.writeToString(validate);
+        return str;
+    }*/
 }

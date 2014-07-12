@@ -459,24 +459,26 @@ public class AliRestClient implements RestClient {
 
     @Override
     public int put(InputData inputData, ResultInfo result, String template, Object... params) {
-        HttpPut HttpPut = createMethod(domain, project, PUT_BUILDER, createRequestEntity(inputData), template, params);
-        setHeaders(HttpPut, inputData.getHeaders());
-        executeHttpMethod(HttpPut, result);
+        HttpPut httpPut = createMethod(domain, project, PUT_BUILDER, createRequestEntity(inputData), template, params);
+        setHeaders(httpPut, inputData.getHeaders());
+        httpPut.setHeader("Content-Type", "application/xml");
+        executeHttpMethod(httpPut, result);
         return result.getHttpStatus();
     }
 
     @Override
     public int delete(ResultInfo result, String template, Object... params) {
-        HttpDelete HttpDelete = createMethod(domain, project, DELETE_BUILDER, null, template, params);
-        executeHttpMethod(HttpDelete, result);
+        HttpDelete httpDelete = createMethod(domain, project, DELETE_BUILDER, null, template, params);
+        executeHttpMethod(httpDelete, result);
         return result.getHttpStatus();
     }
 
     @Override
     public int post(InputData data, ResultInfo result, String template, Object... params) {
-        HttpPost HttpPost = createMethod(domain, project, POST_BUILDER, createRequestEntity(data), template, params);
-        setHeaders(HttpPost, data.getHeaders());
-        executeHttpMethod(HttpPost, result);
+        HttpPost httpPost = createMethod(domain, project, POST_BUILDER, createRequestEntity(data), template, params);
+        setHeaders(httpPost, data.getHeaders());
+        httpPost.setHeader("Content-Type", "application/xml");
+        executeHttpMethod(httpPost, result);
         return result.getHttpStatus();
     }
     

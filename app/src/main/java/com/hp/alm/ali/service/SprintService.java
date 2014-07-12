@@ -179,8 +179,8 @@ public class SprintService {
         query.addColumn("status", 1);
         query.addColumn("owner", 1);
         query.addColumn("entity-id", 1);
+        query.addColumn("story-points", 1);
         query.setValue("sprint-id", String.valueOf(sprint.getPropertyValue("id")));
-        query.setValue("owner", "guest@test.com");
         query.setValue("team-id", String.valueOf(team.getPropertyValue("id")));
         //query.addOrder("last-modified", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
@@ -209,8 +209,8 @@ public class SprintService {
         }
     }
 
-    private Entity findMyTeam(List<Entity> teams, Entity release) {
-        String teamId = ApplicationManager.getTeamMemberService().getTeamId("guest@test.com", release.getPropertyValue("id"));
+    private Entity findMyTeam(List<Entity> teams, Entity release, String userName) {
+        String teamId = ApplicationManager.getTeamMemberService().getTeamId(userName, release.getPropertyValue("id"));
         for (Entity entity: teams) {
             if (entity.getProperty("id").equals(teamId)) {
                 return entity;
@@ -262,8 +262,7 @@ public class SprintService {
 
                 if(!teamSelector.values.contains(teamSelector.selected)) {
                     // TODO: choose my team
-                    selectTeam(findMyTeam(list, release));
-                    //selectTeam(list.isEmpty()? null: list.get(0));
+                    selectTeam(findMyTeam(list, release, ApplicationManager.getUserService().getUser()));
                 }
                 notifyAll();
             }
@@ -484,6 +483,8 @@ public class SprintService {
         }
         return null;
     }
+
+
 
 /*    @Override
     public void entityLoaded(Entity entity, Event event) {

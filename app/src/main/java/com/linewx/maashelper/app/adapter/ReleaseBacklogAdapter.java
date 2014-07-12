@@ -2,6 +2,7 @@ package com.linewx.maashelper.app.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,11 +23,10 @@ public class ReleaseBacklogAdapter extends BaseAdapter {
 	private CustomListView mCustomListView;
 	private HashMap<String, SoftReference<Bitmap>> hashMaps = new HashMap<String, SoftReference<Bitmap>>();
 
-	public ReleaseBacklogAdapter(Context context, EntityList lists,
-                                 CustomListView customListView) {
+	public ReleaseBacklogAdapter(Context context, EntityList lists) {
 		this.mContext = context;
 		this.lists = lists;
-		this.mCustomListView = customListView;
+		//this.mCustomListView = customListView;
 	}
 
 	@Override
@@ -55,45 +55,34 @@ public class ReleaseBacklogAdapter extends BaseAdapter {
 			convertView = View.inflate(mContext, R.layout.fragment_story_item,
                     null);
 			holder = new Holder();
-			holder.tv_status = (TextView) convertView.findViewById(R.id.story_status);
-			holder.tv_name = (TextView) convertView
-					.findViewById(R.id.story_name);
-			holder.tv_owner = (TextView) convertView
-					.findViewById(R.id.story_owner);
+			holder.tv_status = (TextView) convertView.findViewById(R.id.rbi_status);
+			holder.tv_name = (TextView) convertView.findViewById(R.id.rbi_name);
+			holder.tv_owner = (TextView) convertView.findViewById(R.id.rbi_owner);
+            holder.tv_point = (TextView) convertView.findViewById(R.id.rbi_point);
 			convertView.setTag(holder);
 		} else {
 			holder = (Holder) convertView.getTag();
 		}
-		/*String path = chat.getImgPath();
-		if (hashMaps.containsKey(path)) {
-            holder.iv.setImageBitmap(hashMaps.get(path).get());
-            //另一个地方缓存释放资源
-			ImgUtil.getInstance().reomoveCache(path);
-		} else {
-			holder.iv.setTag(chat.getImgPath());
-			ImgUtil.getInstance().loadBitmap(chat.getImgPath(),
-					new OnLoadBitmapListener() {
-						@Override
-						public void loadImage(Bitmap bitmap, String path) {
-							ImageView iv = (ImageView) mCustomListView
-									.findViewWithTag(path);
-							if (bitmap != null && iv != null) {
-								bitmap = SystemMethod.toRoundCorner(bitmap, 15);
-								iv.setImageBitmap(bitmap);
 
-								if (!hashMaps.containsKey(path)) {
-									hashMaps.put(path,
-											new SoftReference<Bitmap>(bitmap));
-								}
-							}
-						}
-					});
 
-		}*/
+
+        String status = story.getPropertyValue("status");
+        if(status.equals("New")) {
+            holder.tv_status.setBackgroundColor(mContext.getResources().getColor(R.color.New));
+        }else if(status.equals("In Progress")) {
+            holder.tv_status.setBackgroundColor(mContext.getResources().getColor(R.color.InProgress));
+        }else if(status.equals("In Testing")) {
+            holder.tv_status.setBackgroundColor(mContext.getResources().getColor(R.color.InTesting));
+        }else if(status.equals("Done")) {
+            holder.tv_status.setBackgroundColor(mContext.getResources().getColor(R.color.Done));
+        }
 
         holder.tv_status.setText(story.getPropertyValue("status"));
+
 		holder.tv_name.setText(story.getPropertyValue("entity-name"));
+
 		holder.tv_owner.setText(story.getPropertyValue("owner"));
+        holder.tv_point.setText(story.getPropertyValue("story-points"));
 		return convertView;
 	}
 
@@ -101,6 +90,7 @@ public class ReleaseBacklogAdapter extends BaseAdapter {
 		TextView tv_status;
 		TextView tv_name;
 		TextView tv_owner;
+        TextView tv_point;
 	}
 
 }
