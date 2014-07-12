@@ -12,7 +12,7 @@
               android:id="@+id/selector_title"
               android:textSize="18sp"
             />
-    <com.linewx.maashelper.app.view.CustomListView
+    <com.hp.saas.agm.app.view.CustomListView
             android:id="@+id/selector_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -3,12 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <com.linewx.maashelper.app.view.TitleBarView
+    <com.hp.saas.agm.app.view.TitleBarView
         android:id="@+id/title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <com.linewx.maashelper.app.view.CustomerScrollView
+    <com.hp.saas.agm.app.view.CustomerScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/title_bar" >
@@ -303,6 +303,6 @@
                     android:src="@drawable/qvip_pay_wallet_icon_arrow_right_normal" />
             </RelativeLayout>
         </RelativeLayout>
-    </com.linewx.maashelper.app.view.CustomerScrollView>
+    </com.hp.saas.agm.app.view.CustomerScrollView>
 
 </RelativeLayout>
