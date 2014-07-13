@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hp.saas.agm.app" >
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/agm"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+                android:name="com.hp.saas.agm.app.WelcomeActivity"
+                android:label="@string/app_name"
+                android:theme="@android:style/Theme.Light.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+
+            android:name="com.hp.saas.agm.app.LoginActivity"
+            android:label="login"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+
+
+
+        </activity>
+        <activity
+                android:name="com.hp.saas.agm.app.MainActivity"
+                android:label="Sprint">
+        </activity>
+        <activity
+                android:name="com.hp.saas.agm.app.StoryActivity"
+                android:label="Story">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.hp.saas.agm.app.MainActivity" />
+        </activity>
+
+        <activity
+                android:name="com.hp.saas.agm.app.StoryDetailActivity"
+                android:label="Story">
+        </activity>
+
+        <activity
+                android:name="com.hp.saas.agm.app.TaskActivity"
+                android:label="Task">
+        </activity>
+    </application>
+
+</manifest>

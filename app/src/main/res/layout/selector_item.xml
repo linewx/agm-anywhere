@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+        >
+
+    <ImageView
+            android:id="@+id/item_badge"
+            android:layout_height="fill_parent"
+            android:layout_width="10dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitXY"
+            android:background="@color/gray"/>
+
+    <TextView
+            android:id="@+id/item_name"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:text="In Progress"
+            />
+</LinearLayout>
+
