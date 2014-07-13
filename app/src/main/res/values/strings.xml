@@ -31,14 +31,14 @@
     <string name="no_data">No data</string>
 
     <!-- Refresh -->
-    <string name="p2refresh_head_load_more">加载更多</string>
-    <string name="p2refresh_end_load_more">更    多</string>
-    <string name="p2refresh_end_click_load_more">点击加载</string>
-    <string name="p2refresh_release_refresh">松开立即刷新</string>
-    <string name="p2refresh_pull_to_refresh">下拉刷新</string>
-    <string name="p2refresh_doing_head_refresh">正在刷新&#8230;</string>
-    <string name="p2refresh_doing_end_refresh">加载中&#8230;</string>
-    <string name="p2refresh_refresh_lasttime">最近更新&#160;&#058;&#160;</string>
+    <string name="p2refresh_head_load_more">Load more</string>
+    <string name="p2refresh_end_load_more">More</string>
+    <string name="p2refresh_end_click_load_more">Click to load</string>
+    <string name="p2refresh_release_refresh">Release to refresh</string>
+    <string name="p2refresh_pull_to_refresh">pull down to refresh</string>
+    <string name="p2refresh_doing_head_refresh">Refreshing&#8230;</string>
+    <string name="p2refresh_doing_end_refresh">Loading&#8230;</string>
+    <string name="p2refresh_refresh_lasttime">Last modified&#160;&#058;&#160;</string>
 
     <string name="recentchat">最近聊天</string>
     <string name="choose_constact">选择联系人</string>

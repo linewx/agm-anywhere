@@ -33,14 +33,14 @@ feature
 
 Issues
 =================
-1. list refresh behaviour is not wrong
+1. __(testing)__list refresh behaviour is not wrong
 2. __(testing)__select list must not scrollable
 3. team list pop up too slow on the first time
 4. icon size is not correct
 6. __(testing)__story detail content was hidden out of screen 
 7. save icon is not good
 8. __(testing)__ selector title is not correct(choose sprint, owner, status) 
-9. use english 
+9. __(testing)__use english 
 
 Enhancement
 ============

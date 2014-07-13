@@ -31,7 +31,7 @@ import java.util.Locale;
 public class CustomListView extends ListView implements OnScrollListener {
 
 	/**  显示格式化日期模板   */
-	private final static String DATE_FORMAT_STR = "yyyy年MM月dd日 HH:mm";
+	private final static String DATE_FORMAT_STR = "yyyy-MM-dd HH:mm";
 	
 	/**  实际的padding的距离与界面上偏移距离的比例   */
 	private final static int RATIO = 3;
