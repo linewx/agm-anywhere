@@ -1,40 +1,48 @@
-======= features ================
-1. while network is weak, too much time to wait without any information
-2. wizard to initialize release and team
-3. release and team cache
-4. add task
-5. remove task
-6. edit task
-7. avatar
-8. remove story
-9. navigate back task -> story detail -> story list
-10. can show all story
-11. can navigate other sprint
-12. only show my story list
-13. drawer menu
-            -- log out
-            -- settings
+feature
+================
+*  while network is weak, too much time to wait without any information
+*  wizard to initialize release and team
+* release and team cache
+* add task
+* remove task
+* edit task
+* avatar
+* remove story
+* navigate back task -> story detail -> story list
+* can show all story
+* can navigate other sprint
+* only show my story list
+* drawer menu
+            1. log out
+            2. settings
 
-14. settings activity
-15. switch to strict mode
-16. refactor init progress(load release, team, sprint)
-17. persistent story data
-18. general solution
+* settings activity
+* switch to strict mode
+* refactor init progress(load release, team, sprint)
+* persistent story data
+* general solution
     -- how
     -- remove uneeded resource
     --
 
-19. project/domain/url
-20. test with other user
+* project/domain/url
+* test with other user
+
+* commit to github -- done
 
 
-
-
-============issue list ==================
+Issues
+=================
 1. list refresh behaviour is not wrong
-2. select list must not scrollable
+2. __(testing)__select list must not scrollable
 3. team list pop up too slow on the first time
 4. icon size is not correct
-5. show team member full name instead of email
-6. story detail can show of more than one screen
+6. __(testing)__story detail content was hidden out of screen 
 7. save icon is not good
+8. __(testing)__ selector title is not correct(choose sprint, owner, status) 
+
+Enhancement
+============
+* .while selecting owner, use full name instead of email address
+
+

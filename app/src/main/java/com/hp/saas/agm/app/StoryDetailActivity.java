@@ -175,6 +175,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private void clickStatus(View v) {
         try {
             ListPopupWindow popupWindow = new ListPopupWindow(mContext);
+            popupWindow.setTitle("Status");
             ArrayList<String> statusList = new ArrayList<String>();
             statusList.add("New");
             statusList.add("In Progress");
@@ -201,7 +202,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private void clickSprint(View v) {
         try {
             ListPopupWindow popupWindow = new ListPopupWindow(mContext);
-
+            popupWindow.setTitle("Sprint");
             popupWindow.setAdapter(new SprintAdapter(mContext, ApplicationManager.getSprintService().getSprints(), story.getPropertyValue("target-rcyc")));
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
@@ -222,6 +223,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private void clickOwner(View v) {
         try {
             ListPopupWindow popupWindow = new ListPopupWindow(mContext);
+            popupWindow.setTitle("Owner");
             Entity team = ApplicationManager.getSprintService().getTeam();
             EntityList teamMembers = ApplicationManager.getTeamMemberService().getTeamMembers(team);
             popupWindow.setAdapter(new TeamAdapter(mContext, teamMembers, releaseBacklogItem.getPropertyValue("owner")));

@@ -36,6 +36,11 @@ public class ListPopupWindow extends CustomPopupWindow {
         title = (TextView)listSelector.findViewById(R.id.selector_title);
         list = (CustomListView)listSelector.findViewById(R.id.selector_list);
 
+        //set to normal list
+        list.setAutoLoadMore(false);
+        list.setCanLoadMore(false);
+        list.setCanRefresh(false);
+
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
@@ -44,8 +49,13 @@ public class ListPopupWindow extends CustomPopupWindow {
                 selected = newValue;
                 fireSelected(newValue, oldValue);
                 hide();
+
             }
         });
+    }
+
+    public void setTitle(String title) {
+        this.title.setText(title);
     }
     public void setAdapter(BaseAdapter adapter) {
         list.setAdapter(adapter);
