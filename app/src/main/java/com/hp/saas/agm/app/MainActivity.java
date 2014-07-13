@@ -24,6 +24,7 @@ public class MainActivity extends Activity implements OnClickListener {
     private LoadingView lvLoading;
     private EntityList releaseBacklog = EntityList.empty();
     private Context mContext;
+    private ReleaseBacklogAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,8 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     private void init() {
-        lvReleaseBacklog.setAdapter(new ReleaseBacklogAdapter(this, releaseBacklog));
+        adapter = new ReleaseBacklogAdapter(this, releaseBacklog);
+        lvReleaseBacklog.setAdapter(adapter);
 
         lvReleaseBacklog.setOnRefreshListener(new CustomListView.OnRefreshListener() {
             @Override
@@ -92,7 +94,7 @@ public class MainActivity extends Activity implements OnClickListener {
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
             releaseBacklog.addAll(recentReleaseBacklog);
-            //adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
         }
 
         @Override
@@ -108,18 +110,21 @@ public class MainActivity extends Activity implements OnClickListener {
 
         @Override
         protected List<Entity> doInBackground(Integer... params) {
-            recentStories = ApplicationManager.getSprintService().getStories();
+            recentStories = ApplicationManager.getSprintService().getStories(true);
             return recentStories;
         }
 
         @Override
         protected void onPostExecute(List<Entity> result) {
             super.onPostExecute(result);
+
             if (result != null) {
-                for (Entity rc : recentStories) {
+               /* for (Entity rc : recentStories) {
                     releaseBacklog.add(0, rc);
-                }
-                //adapter.notifyDataSetChanged();
+                }*/
+                releaseBacklog.clear();
+                releaseBacklog.addAll(recentStories);
+                adapter.notifyDataSetChanged();
                 lvReleaseBacklog.onRefreshComplete();
             }
         }

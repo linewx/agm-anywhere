@@ -189,6 +189,7 @@ public class SprintService {
         } finally {
             synchronized (this) {
                 storySelector.values = list;
+                storySelector.requestRunning = false;
                 notifyAll();
             }
         }
@@ -424,6 +425,12 @@ public class SprintService {
         }
     }
 
+    public synchronized EntityList getStories(Boolean reload) {
+        if (reload) {
+            storySelector.values = null;
+        }
+        return getStories();
+    }
 
 
 

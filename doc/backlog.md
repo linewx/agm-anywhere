@@ -40,6 +40,7 @@ Issues
 6. __(testing)__story detail content was hidden out of screen 
 7. save icon is not good
 8. __(testing)__ selector title is not correct(choose sprint, owner, status) 
+9. use english 
 
 Enhancement
 ============
