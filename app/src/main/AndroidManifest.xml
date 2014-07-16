@@ -49,8 +49,12 @@
         </activity>
 
         <activity
-                android:name="com.hp.saas.agm.app.ReleaseSetupActivity"
-                android:label="Set up release cycle">
+                android:name=".ReleaseConfigurationActivity"
+                android:label="Configuration">
+        </activity>
+        <activity
+                android:name=".TeamConfigurationActivity"
+                android:label="Configuration">
         </activity>
     </application>
 

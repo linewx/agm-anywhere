@@ -2,33 +2,32 @@ package com.hp.saas.agm.app;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import com.hp.saas.agm.app.adapter.*;
-import com.hp.saas.agm.app.view.CustomListView;
+import android.widget.ExpandableListView;
+import com.hp.saas.agm.app.adapter.ReleaseExpandTreeAdapter;
 import com.hp.saas.agm.app.view.ExpandedTreeView;
 import com.hp.saas.agm.app.view.LoadingView;
-import com.hp.saas.agm.app.view.popup.PopupListener;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
 import com.hp.saas.agm.manager.ApplicationManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
-public class ReleaseSetupActivity extends Activity implements OnClickListener {
+public class TeamConfigurationActivity extends Activity implements OnClickListener {
 /*    private CustomListView lvSuggestList;
     private CustomListView lvFullList;*/
     private ExpandedTreeView expandedTreeView;
     private LoadingView lvLoading;
     private Context mContext;
     private ReleaseExpandTreeAdapter releaseAdapter;
-    private HashMap<String, EntityList> releaseList = new HashMap<String, EntityList>();
+    private LinkedHashMap<String, EntityList> releaseList = new LinkedHashMap<String, EntityList>();
+    private HashMap<String, String> groupsName = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class ReleaseSetupActivity extends Activity implements OnClickListener {
         }
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_release_wizard);
+        setContentView(R.layout.activity_release_configuration);
 
         mContext = this;
         findView();
@@ -58,8 +57,29 @@ public class ReleaseSetupActivity extends Activity implements OnClickListener {
         expandedTreeView.setGroupIndicator(null);
         //releaseAdapter = new ExpandedTreeView(mContext, maps, mIphoneTreeView,mSearchView);
         //mIphoneTreeView.setAdapter(mExpAdapter);
-        releaseAdapter = new ReleaseExpandTreeAdapter(mContext, releaseList);
+        releaseList.put("current", EntityList.empty());
+        releaseList.put("coming", EntityList.empty());
+        releaseList.put("passed", EntityList.empty());
+
+        groupsName.put("current", "Current Release (recommended)");
+        groupsName.put("coming", "Coming Release");
+        groupsName.put("passed", "Passed Release");
+
+        releaseAdapter = new ReleaseExpandTreeAdapter(mContext, releaseList, groupsName);
         expandedTreeView.setAdapter(releaseAdapter);
+
+        expandedTreeView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                ReleaseExpandTreeAdapter adapter = (ReleaseExpandTreeAdapter)parent.getAdapter();
+                Entity release = (Entity)adapter.getChild(groupPosition, childPosition);
+                ApplicationManager.getSprintService().selectRelease(release);
+                return false;
+               /* TextView a = (TextView)v.findViewById(R.id.item_name);
+                ApplicationManager.getMessageService().show(a.getText().toString());
+                return false;*/
+            }
+        });
         new NewsAsyncTask(lvLoading).execute(0);
     }
 
@@ -82,7 +102,9 @@ public class ReleaseSetupActivity extends Activity implements OnClickListener {
 
     private class NewsAsyncTask extends AsyncTaskBase {
         EntityList recentReleases = null;
-        EntityList recentSugguestReleases = null;
+        EntityList currentReleases = EntityList.empty();
+        EntityList comingReleases = EntityList.empty();
+        EntityList passedReleases = EntityList.empty();
 
         public NewsAsyncTask(LoadingView loadingView) {
             super(loadingView);
@@ -92,12 +114,17 @@ public class ReleaseSetupActivity extends Activity implements OnClickListener {
         protected Integer doInBackground(Integer... params) {
             int result = -1;
             recentReleases = ApplicationManager.getSprintService().getReleases();
-            recentSugguestReleases = ApplicationManager.getSprintService().getReleases();
-            /*try {
-                recentSugguestReleases = ApplicationManager.getSprintService().getClosestEntities("release");
-            }catch(Exception e) {
-                e.printStackTrace();
-            }*/
+            for (Entity entity: recentReleases) {
+                int distance = ApplicationManager.getSprintService().distanceToNow(entity);
+                if (distance == 0) {
+                    currentReleases.add(entity);
+                }else if(distance > 0) {
+                    comingReleases.add(entity);
+                }else{
+                    passedReleases.add(entity);
+                }
+            }
+
 
             if (recentReleases.size() > 0) {
                 result = 1;
@@ -108,8 +135,9 @@ public class ReleaseSetupActivity extends Activity implements OnClickListener {
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
-            releaseList.put("current", recentReleases);
-            releaseList.put("coming", recentReleases);
+            releaseList.get("current").addAll(currentReleases);
+            releaseList.get("coming").addAll(comingReleases);
+            releaseList.get("passed").addAll(passedReleases);
             releaseAdapter.notifyDataSetChanged();
 
             if (releaseAdapter.getHeadViewClickStatus(0) == 0) {

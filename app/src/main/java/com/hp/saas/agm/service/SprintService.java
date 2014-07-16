@@ -27,6 +27,8 @@ import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
 
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -43,6 +45,7 @@ public class SprintService {
     final private Selector sprintSelector = new Selector();
     final private Selector teamSelector = new Selector();
     final private Selector storySelector = new Selector();
+    final private Selector teamMemberSelector = new Selector();
 
     public SprintService(EntityService entityService, RestService restService, SharedPreferencesService sharedPreferencesService) {
         this.entityService = entityService;
@@ -52,10 +55,66 @@ public class SprintService {
     }
 
     public void init() {
-        loadReleases();
+/*        loadReleases();
         loadSprints();
         loadTeams();
-        loadStories();
+        loadStories();*/
+        //load from cache
+        //we do cache for: release, sprint, teams, teams members
+        initReleases();
+        initSprint();
+        initTeams();
+        initTeamMembers();
+    }
+
+    public void initReleases() {
+        try {
+            releaseSelector.values = EntityList.create(sharedPreferencesService.getFromFile("release"));
+        }catch(IOException e) {
+            releaseSelector.values = null;
+        }
+
+        String releaseId = sharedPreferencesService.getPreference("selectedReleaseId");
+        if (releaseId != null) {
+            releaseSelector.selected = lookup(new EntityRef("release", Integer.parseInt(releaseId)));
+        }
+        releaseSelector.requestRunning = false;
+    }
+
+    public void initSprint() {
+        try {
+            sprintSelector.values = EntityList.create(sharedPreferencesService.getFromFile("sprint"));
+        }catch(IOException e) {
+            sprintSelector.values = null;
+        }
+        if (sprintSelector.values != null) {
+            selectSprint(findClosest(sprintSelector.values));
+        }
+
+    }
+
+    public void initTeams() {
+        try {
+            teamSelector.values = EntityList.create(sharedPreferencesService.getFromFile("team"));
+        }catch(IOException e) {
+            releaseSelector.values = null;
+        }
+
+        String teamId = sharedPreferencesService.getPreference("teamId");
+        if (teamId != null) {
+            teamSelector.selected = lookup(new EntityRef("team", Integer.parseInt(teamId)));
+        }
+        teamSelector.requestRunning = false;
+    }
+    public void initTeamMembers() {
+        //only load my team member
+        try {
+            teamMemberSelector.values = EntityList.create(sharedPreferencesService.getFromFile("team_memeber"));
+        }catch(IOException e) {
+            releaseSelector.values = null;
+        }
+        teamMemberSelector.selected = null;
+        releaseSelector.requestRunning = false;
     }
 
 /*    private Entity loadEntity(Element element, String type) {
@@ -147,8 +206,6 @@ public class SprintService {
             });
             list = entityService.query(query);
 
-            /*EntityList entityList = EntityList.create(sharedPreferencesService.getFromFile("release"));
-            EntityList release = entityList;*/
 
         } finally {
             synchronized (this) {
@@ -366,6 +423,10 @@ public class SprintService {
         }
 
         this.releaseSelector.selected = release;
+
+        //cache selected Release
+        sharedPreferencesService.setPreference("releaseId", String.valueOf(release.getId()));
+
         /*if(release != null) {
             if(ServerType.AGM.equals(restService.getServerTypeIfAvailable())) {
                 sprintSelector.requestRunning = true;
@@ -500,6 +561,10 @@ public class SprintService {
         });
     }
 
+    public Entity getCurrentRelease() {
+        return releaseSelector.selected;
+    }
+
     public static boolean isCurrentSprint(Entity sprint) {
         return "CURRENT".equalsIgnoreCase(sprint.getPropertyValue("tense"));
     }
@@ -526,6 +591,32 @@ public class SprintService {
             return 0;
         } catch(Exception e) {
             return Long.MAX_VALUE;
+        }
+    }
+
+    public static int distanceToNow(Entity entity) {
+        final long now = System.currentTimeMillis();
+        try {
+            Date startDate = ALM_DATE_FORMAT.parse(entity.getPropertyValue("start-date"));
+            if(now < startDate.getTime()) {
+                // future release
+                return 1;
+            }
+
+            Date endDate = ALM_DATE_FORMAT.parse(entity.getPropertyValue("end-date"));
+            // make end-date inclusive
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(endDate);
+            calendar.add(Calendar.DATE, 1);
+            endDate = calendar.getTime();
+
+            if(now > endDate.getTime()) {
+                return -1;
+            }
+
+            return 0;
+        } catch(Exception e) {
+            return -1;
         }
     }
 

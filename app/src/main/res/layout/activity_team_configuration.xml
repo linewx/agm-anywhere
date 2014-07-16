@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              >
+
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:orientation="vertical">
+        <TextView
+                android:id="@+id/tv_release_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:padding="10dp"
+                android:text="(1/2)  Choose your release"
+                android:background="@color/blue"
+                android:textStyle="bold"
+                android:textColor="@color/whites"
+                />
+
+        <com.hp.saas.agm.app.view.ExpandedTreeView
+                android:id="@+id/release_expand_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:cacheColorHint="@android:color/transparent"
+                android:divider="@color/gray"
+                android:transcriptMode="normal" />
+
+
+
+    </LinearLayout>
+    <com.hp.saas.agm.app.view.LoadingView
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+</RelativeLayout>

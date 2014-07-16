@@ -38,14 +38,8 @@ public class SharedPreferencesService {
         }
     }
 
-    public InputStream getFromFile(String filename) {
-        InputStream result = null;
-        try {
-            result = context.openFileInput(filename);
-        }catch(IOException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public InputStream getFromFile(String filename) throws IOException{
+        return context.openFileInput(filename);
     }
 
 

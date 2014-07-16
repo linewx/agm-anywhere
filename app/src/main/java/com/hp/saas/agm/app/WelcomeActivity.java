@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.widget.ImageView;
-import com.hp.saas.agm.app.adapter.ReleaseSetupAdapter;
-import com.hp.saas.agm.core.model.parser.EntityList;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.rest.client.RestClient;
 import com.hp.saas.agm.service.RestService;
@@ -67,14 +65,22 @@ public class WelcomeActivity extends Activity {
                     try {
                         restClient.login();
                         restService.setServerType(LoginActivity.getServerType(restClient));
+
+                        //load meta information from cache
                         ApplicationManager.getSprintService().init();
 
-                        //loading story
-                        //Intent intent = new Intent(mContext, MainActivity.class);
-                        EntityList release = ApplicationManager.getSprintService().getReleasesFromFile();
-                        Intent intent = new Intent(mContext, ReleaseSetupActivity.class);
-                        startActivity(intent);
-                        finish();
+                        if (ApplicationManager.getSprintService().getCurrentRelease() == null) {
+                            //set up release
+                            Intent intent = new Intent(mContext, ReleaseConfigurationActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else {
+                            //enter to main screen
+                            Intent intent = new Intent(mContext, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
 
                     } catch(Exception e) {
                         Intent intent = new Intent(mContext, LoginActivity.class);

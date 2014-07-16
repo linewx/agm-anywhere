@@ -16,6 +16,8 @@ import com.hp.saas.agm.app.R;
 
 import java.lang.ref.SoftReference;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 public class ReleaseExpandTreeAdapter extends BaseExpandableListAdapter implements
         ExpandedTreeView.ExpandTreeHeaderAdapter {
@@ -23,18 +25,24 @@ public class ReleaseExpandTreeAdapter extends BaseExpandableListAdapter implemen
 	private static final String TAG = "ReleaseExpandTreeAdapter";
 	private Context mContext;
 	private ExpandedTreeView expandedTreeView;
-    private HashMap<String, EntityList> children = new HashMap<String, EntityList>();
+    private LinkedHashMap<String, EntityList> children = new LinkedHashMap<String, EntityList>();
+    private HashMap<String,String> groupsName = null;
 
 
 	// 伪数据
 	private HashMap<Integer, Integer> groupStatusMap;
 
-    private String[] groups = {"current", "coming"};
-    private String[] groupsName = {"Current release(recommend)", "comming release"};
+    //private String[] groups = {"current", "coming", "passed"};
+    //private String[] groupsName = {"Current release(recommend)", "Coming release", "Passed release"};
 
-	public ReleaseExpandTreeAdapter(Context context, HashMap<String, EntityList> children) {
+    private String[] groups;
+
+	public ReleaseExpandTreeAdapter(Context context, LinkedHashMap<String, EntityList> children, HashMap<String, String>groupsName) {
 		this.mContext = context;
 		this.children = children;
+        this.groupsName = groupsName;
+        groups = children.keySet().toArray(new String[children.size()]);
+
         groupStatusMap = new HashMap<Integer, Integer>();
 	}
 
@@ -47,7 +55,11 @@ public class ReleaseExpandTreeAdapter extends BaseExpandableListAdapter implemen
 	}
 
 	public int getChildrenCount(int groupPosition) {
-		return children.get(groups[groupPosition]).size();
+        if (children.size() == 0) {
+            return 0;
+        }else {
+            return children.get(groups[groupPosition]).size();
+        }
 	}
 
 	public Object getGroup(int groupPosition) {
@@ -152,7 +164,7 @@ public class ReleaseExpandTreeAdapter extends BaseExpandableListAdapter implemen
 			int childPosition, int alpha) {
         //if ()
 		((TextView) header.findViewById(R.id.group_name))
-				.setText(groupsName[groupPosition]);
+				.setText(groupsName.get(groups[groupPosition]));
 
         int totalCount = 0;
         for (int i=0; i<groups.length; i++) {
