@@ -24,14 +24,14 @@ public class ApplicationManager {
     private static Context context;
 
     static {
+        sharedPreferencesService = new SharedPreferencesService();
         restService = RestService.getInstance();
         metadataSimpleService = new MetadataSimpleService();
         metadataService = new MetadataService(metadataSimpleService, restService);
         translateService = new TranslateService();
         entityService = new EntityService(restService, metadataService);
-        sprintService = new SprintService(entityService, restService);
+        sprintService = new SprintService(entityService, restService, sharedPreferencesService);
         teamMemberService = new TeamMemberService(entityService);
-        sharedPreferencesService = new SharedPreferencesService();
         userService = new UserService(entityService, sharedPreferencesService);
         messageService = new MessageService();
 

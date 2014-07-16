@@ -17,8 +17,7 @@
 package com.hp.saas.agm.service;
 
 import android.text.TextUtils;
-import com.hp.saas.agm.core.entity.EntityRef;
-import com.hp.saas.agm.core.entity.EntityQuery;
+import com.hp.saas.agm.core.entity.*;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.Metadata;
 import com.hp.saas.agm.core.model.Field;
@@ -26,17 +25,16 @@ import com.hp.saas.agm.core.model.Field;
 import com.hp.saas.agm.core.model.parser.EntityList;
 import com.hp.saas.agm.core.model.parser.DefectLinkList;
 import com.hp.saas.agm.core.model.ServerStrategy;
-import com.hp.saas.agm.core.entity.EntityFilter;
-import com.hp.saas.agm.core.entity.EntityCrossFilter;
-import com.hp.saas.agm.core.entity.SortOrder;
 
 import com.hp.saas.agm.manager.ApplicationManager;
-import com.hp.saas.agm.core.entity.EntityListener;
 
+import com.hp.saas.agm.utils.IOUtils;
 import com.hp.saas.agm.utils.XmlUtils;
 import org.apache.http.HttpStatus;
 import org.w3c.dom.Element;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -44,6 +42,8 @@ public class EntityService {
 
     private RestService restService;
     private MetadataService metadataService;
+    private NewEntityListener.EntityQueryListener entityQueryListener;
+
 /*    private WeakListeners<EntityListener> listeners;*/
     //final private Map<EntityRef, List<EntityListener>> asyncRequests;
 
@@ -113,6 +113,7 @@ public class EntityService {
         });
     }*/
 
+
     public Entity getEntity(EntityRef ref) {
         EntityQuery query = new EntityQuery(ref.type);
         Metadata metadata = metadataService.getEntityMetadata(ref.type);
@@ -148,12 +149,30 @@ public class EntityService {
         }
     }
 
+    private void fireQueryEvent(EntityQuery query, byte[] results) {
+        entityQueryListener.query(query, results);
+    }
     private EntityList doQuery(EntityQuery query, boolean complete) {
         InputStream is = queryForStream(query);
+        InputStream input1 = null;
+        if(entityQueryListener != null) {
+            try {
+                byte[] byteArray = IOUtils.toByteArray(is);
+                //fireQueryEvent(query, byteArray);
+                input1 = new ByteArrayInputStream(byteArray);
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+
         if("defect-link".equals(query.getEntityType()) && restService.getServerStrategy().hasSecondLevelDefectLink()) {
-            return DefectLinkList.create(is, complete);
+            return DefectLinkList.create(input1, complete);
         } else {
-            return parse(is, complete);
+            return parse(input1, complete);
         }
     }
 
@@ -456,6 +475,14 @@ public class EntityService {
                 }
             }
         });*/
+    }
+
+    public void setEntityQueryListener(NewEntityListener.EntityQueryListener entityQueryListener) {
+        this.entityQueryListener = entityQueryListener;
+    }
+
+    public void clearEntityQueryListener() {
+        this.entityQueryListener = null;
     }
 
 }

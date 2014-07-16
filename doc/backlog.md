@@ -29,6 +29,7 @@ feature
 * test with other user
 
 * commit to github -- done
+* autodetect release and team
 
 
 Issues
@@ -41,9 +42,10 @@ Issues
 7. save icon is not good
 8. __(testing)__ selector title is not correct(choose sprint, owner, status) 
 9. __(testing)__use english 
+10. scroll to top when fire refresh event
 
 Enhancement
-============
-* .while selecting owner, use full name instead of email address
+===========
+* while selecting owner, use full name instead of email address
 
 

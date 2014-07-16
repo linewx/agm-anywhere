@@ -47,6 +47,11 @@
                 android:name="com.hp.saas.agm.app.TaskActivity"
                 android:label="Task">
         </activity>
+
+        <activity
+                android:name="com.hp.saas.agm.app.ReleaseSetupActivity"
+                android:label="Set up release cycle">
+        </activity>
     </application>
 
 </manifest>

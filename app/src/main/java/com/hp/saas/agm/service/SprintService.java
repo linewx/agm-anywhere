@@ -16,14 +16,18 @@
 
 package com.hp.saas.agm.service;
 
+import android.content.SharedPreferences;
 import com.hp.saas.agm.core.entity.EntityQuery;
 import com.hp.saas.agm.core.entity.EntityRef;
+import com.hp.saas.agm.core.entity.NewEntityListener;
 import com.hp.saas.agm.core.entity.SortOrder;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.manager.ThreadPoolManager;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
 
+
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,15 +37,17 @@ public class SprintService {
 
     private EntityService entityService;
     private RestService restService;
+    private SharedPreferencesService sharedPreferencesService;
 
     final private Selector releaseSelector = new Selector();
     final private Selector sprintSelector = new Selector();
     final private Selector teamSelector = new Selector();
     final private Selector storySelector = new Selector();
 
-    public SprintService(EntityService entityService, RestService restService) {
+    public SprintService(EntityService entityService, RestService restService, SharedPreferencesService sharedPreferencesService) {
         this.entityService = entityService;
         this.restService = restService;
+        this.sharedPreferencesService = sharedPreferencesService;
 
     }
 
@@ -69,6 +75,16 @@ public class SprintService {
         sprintSelector.values = null;
         releaseSelector.values = null;
         storySelector.values = null;
+    }
+
+    public EntityList getReleasesFromFile() {
+        Selector release = (Selector)sharedPreferencesService.getObjectPreference("release");
+        if (release == null) {
+            return null;
+        }else {
+            return release.values;
+        }
+
     }
 
     public void connectedTo(ServerType serverType) {
@@ -121,7 +137,19 @@ public class SprintService {
         query.addColumn("end-date", 1);
         EntityList list = EntityList.empty();
         try {
+            entityService.setEntityQueryListener(new NewEntityListener.EntityQueryListener() {
+                @Override
+                public void query(EntityQuery query, byte[] bytes) {
+                    if (query.getEntityType().equals("release")) {
+                        sharedPreferencesService.saveToFile("release", bytes);
+                    }
+                }
+            });
             list = entityService.query(query);
+
+            /*EntityList entityList = EntityList.create(sharedPreferencesService.getFromFile("release"));
+            EntityList release = entityList;*/
+
         } finally {
             synchronized (this) {
                 releaseSelector.values = list;
@@ -130,6 +158,8 @@ public class SprintService {
                 if(!releaseSelector.values.contains(releaseSelector.selected)) {
                     selectRelease(findClosest(list));
                 }
+                //save release persistently
+
                 notifyAll();
             }
         }
@@ -224,6 +254,7 @@ public class SprintService {
         if(!list.isEmpty()) {
             final long now = System.currentTimeMillis();
             // sort according to time distance
+
             Collections.sort(list, new Comparator<Entity>() {
                 @Override
                 public int compare(Entity entity1, Entity entity2) {
@@ -246,6 +277,32 @@ public class SprintService {
             return null;
         }
     }
+
+    public EntityList getClosestEntities(String entityName) {
+        EntityList result = EntityList.empty();
+        final long now = System.currentTimeMillis();
+        if (entityName.equals("release")) {
+            EntityList releases = getReleases();
+            for (Entity release : releases) {
+                if (distance(now, release) == 0) {
+                    result.add(release);
+                }
+            }
+        } else if (entityName.equals("sprint")) {
+            EntityList sprints = getSprints();
+            for (Entity sprint : sprints) {
+                if (distance(now, sprint) == 0) {
+                    result.add(sprint);
+                }
+            }
+        }else {
+            result = null;
+        }
+
+        return result;
+    }
+
+
 
     private void loadTeams(final Entity release) {
         EntityQuery query = new EntityQuery("team");
@@ -515,7 +572,7 @@ public class SprintService {
 
     }
 
-    private static class Selector {
+    private static class Selector implements Serializable{
         private boolean requestRunning;
         private Entity selected;
         private EntityList values;

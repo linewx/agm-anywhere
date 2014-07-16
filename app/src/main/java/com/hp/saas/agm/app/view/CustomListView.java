@@ -485,6 +485,15 @@ public class CustomListView extends ListView implements OnScrollListener {
 	 * 当HeadView状态改变时候，调用该方法，以更新界面
 	 * 
 	 */
+
+    public void fireRefreshEvent() {
+        mHeadState = REFRESHING;
+        changeHeaderViewByState();
+        onRefresh();
+
+        mIsRecored = false;
+        mIsBack = false;
+    }
 	private void changeHeaderViewByState() {
 		switch (mHeadState) {
 		case RELEASE_TO_REFRESH:

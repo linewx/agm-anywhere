@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
+import android.widget.ListPopupWindow;
+import com.hp.saas.agm.app.adapter.SprintAdapter;
+import com.hp.saas.agm.app.adapter.StatusAdapter;
+import com.hp.saas.agm.app.adapter.TeamAdapter;
+import com.hp.saas.agm.app.view.popup.*;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
@@ -19,12 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends Activity implements OnClickListener {
-
+    //todo: refactor filter implementation to using listener
     private CustomListView lvReleaseBacklog;
     private LoadingView lvLoading;
     private EntityList releaseBacklog = EntityList.empty();
     private Context mContext;
     private ReleaseBacklogAdapter adapter;
+
+    private TextView tvSprintFilter;
+    private TextView tvOwnerFilter;
+    private TextView tvStatusFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,9 @@ public class MainActivity extends Activity implements OnClickListener {
     private void findView() {
         lvReleaseBacklog = (CustomListView)findViewById(R.id.lv_release_backlog);
         lvLoading = (LoadingView)findViewById(R.id.loading);
+        tvSprintFilter = (TextView) findViewById(R.id.sprint_filter);
+        tvOwnerFilter = (TextView) findViewById(R.id.owner_filter);
+        tvStatusFilter = (TextView) findViewById(R.id.status_filter);
     }
 
     private void init() {
@@ -65,11 +77,107 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         });
 
+        //click filter bar
+        tvSprintFilter.setOnClickListener(filterListener);
+        tvOwnerFilter.setOnClickListener(filterListener);
+        tvStatusFilter.setOnClickListener(filterListener);
+
         new NewsAsyncTask(lvLoading).execute(0);
     }
 
     @Override
     public void onClick(View v) {
+
+    }
+
+    public OnClickListener filterListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            lvReleaseBacklog.fireRefreshEvent();
+            /*if (!releaseBacklog.isEmpty()) {
+                if(v.getId() == R.id.sprint_filter) {
+                    //do switch sprint
+                    clickSprint(v);
+                }else if(v.getId() == R.id.owner_filter) {
+                    //do filter owner
+                    clickOwner(v);
+                }else if(v.getId() == R.id.status_filter) {
+                    //do filter status
+                    clickStatus(v);
+                }
+            }*/
+
+        }
+    };
+
+    private void clickStatus(View v) {
+        try {
+            com.hp.saas.agm.app.view.popup.ListPopupWindow popupWindow = new com.hp.saas.agm.app.view.popup.ListPopupWindow(mContext);
+            popupWindow.setTitle("Status");
+            ArrayList<String> statusList = new ArrayList<String>();
+            statusList.add("New");
+            statusList.add("In Progress");
+            statusList.add("In Testing");
+            statusList.add("Done");
+            popupWindow.setAdapter(new StatusAdapter(mContext, statusList, "status"));
+            popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
+                @Override
+                public void valueChanged(Object newValue, Object oldValue) {
+                  /*  changedField.add("status");
+                    releaseBacklogItem.setProperty("status", newValue);
+                    tvStatus.setText((String) newValue);*/
+                }
+            });
+            popupWindow.show();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void clickSprint(View v) {
+        try {
+            com.hp.saas.agm.app.view.popup.ListPopupWindow popupWindow = new com.hp.saas.agm.app.view.popup.ListPopupWindow(mContext);
+            popupWindow.setTitle("Sprint");
+            popupWindow.setAdapter(new SprintAdapter(mContext, ApplicationManager.getSprintService().getSprints(), "selected"));
+            popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
+                @Override
+                public void valueChanged(Object newValue, Object oldValue) {
+                  /*  releaseBacklogItem.setProperty("target-rcyc", ((Entity)newValue).getPropertyValue("id"));
+                    tvSprint.setText((String) ((Entity) newValue).getPropertyValue("name"));*/
+                }
+            });
+            popupWindow.show();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void clickOwner(View v) {
+        try {
+            com.hp.saas.agm.app.view.popup.ListPopupWindow popupWindow = new com.hp.saas.agm.app.view.popup.ListPopupWindow(mContext);
+            popupWindow.setTitle("Owner");
+            Entity team = ApplicationManager.getSprintService().getTeam();
+            EntityList teamMembers = ApplicationManager.getTeamMemberService().getTeamMembers(team);
+            popupWindow.setAdapter(new TeamAdapter(mContext, teamMembers, "owner"));
+            popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
+                @Override
+                public void valueChanged(Object newValue, Object oldValue) {
+                /*    releaseBacklogItem.setProperty("owner", ((Entity)newValue).getPropertyValue("name"));
+                    tvOwner.setText((String) ((Entity)newValue).getPropertyValue("name"));*/
+                }
+            });
+            popupWindow.show();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import com.hp.saas.agm.app.adapter.ReleaseSetupAdapter;
+import com.hp.saas.agm.core.model.parser.EntityList;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.rest.client.RestClient;
 import com.hp.saas.agm.service.RestService;
@@ -68,7 +70,9 @@ public class WelcomeActivity extends Activity {
                         ApplicationManager.getSprintService().init();
 
                         //loading story
-                        Intent intent = new Intent(mContext, MainActivity.class);
+                        //Intent intent = new Intent(mContext, MainActivity.class);
+                        EntityList release = ApplicationManager.getSprintService().getReleasesFromFile();
+                        Intent intent = new Intent(mContext, ReleaseSetupActivity.class);
                         startActivity(intent);
                         finish();
 
