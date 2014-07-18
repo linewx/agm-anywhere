@@ -92,7 +92,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
         /*//ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
         //spSprintFilter.setAdapter(adapter);*/
-        SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
+        //SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
+        SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter(mContext, ApplicationManager.getSprintService().getSprints(), "selected");
         spSprintFilter.setAdapter(spinnerAdapter);
         spSprintFilter.setSelection(1);
 

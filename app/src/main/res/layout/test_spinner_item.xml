@@ -3,14 +3,19 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="horizontal"
+              android:background="@color/blue"
         >
 
-    <TextView
-            android:id="@+id/item_name"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:padding="10dp"
-            android:text="In Progress"
-            />
+    <TextView style="?android:attr/spinnerItemStyle"
+              android:singleLine="true"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:ellipsize="marquee"
+              android:text="test"
+              android:gravity="center_horizontal"
+              android:id="@+id/item_name"
+              android:textColor="@color/whites"/>
 </LinearLayout>
+
+
 

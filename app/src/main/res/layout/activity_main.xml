@@ -8,16 +8,16 @@
                   android:orientation="horizontal"
                   android:divider="@drawable/seperator"
                   android:showDividers="middle"
-                  android:id="@+id/ll_filterbar">
+                  android:id="@+id/ll_filterbar"
+                  android:background="@color/blue">
         <Spinner
                 android:id="@+id/sprint_filter"
                 android:layout_width="0dp"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:layout_gravity="center_horizontal"
+                style="?@android:attr/spinnerDropDownItemStyle"
                 />
-
-
         <Spinner
                 android:id="@+id/owner_filter"
                 android:layout_width="0dp"
