@@ -24,7 +24,12 @@ import com.hp.saas.agm.rest.client.filter.IssueTicketFilter;
 import com.hp.saas.agm.rest.client.filter.ResponseFilter;
 import org.apache.http.HttpVersion;
 import org.apache.http.StatusLine;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRoute;
+import org.apache.http.conn.params.ConnPerRouteBean;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -171,11 +176,11 @@ public class AliRestClient implements RestClient {
         this.project = project;
         this.sessionStrategy = sessionStrategy;
 
-        HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-        HttpProtocolParams.setUseExpectContinue(params, true);
-        HttpProtocolParams.setUserAgent(params,"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
-                + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
+        //HttpParams params = new BasicHttpParams();
+        //HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        //HttpProtocolParams.setUseExpectContinue(params, true);
+        //HttpProtocolParams.setUserAgent(params,"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
+         //       + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
 
         SchemeRegistry schReg = new SchemeRegistry();
         schReg.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
@@ -183,10 +188,41 @@ public class AliRestClient implements RestClient {
         //httpCLient = new DefaultHttpClient();
         //httpClient = new DefaultHttpClient(new ThreadSafeClientConnManager(params, schReg), new BasicHttpParams());
         //httpClient = new DefaultHttpClient(params);
-        httpClient = new DefaultHttpClient();
+        //httpClient = new DefaultHttpClient();
 
 
-        setTimeout(DEFAULT_CLIENT_TIMEOUT);
+        //setTimeout(DEFAULT_CLIENT_TIMEOUT);
+
+          final int MAX_TOTAL_CONNECTIONS = 20;
+          final int MAX_CONNECTIONS_PER_ROUTE = 20;
+          final int TIMEOUT_CONNECT = 15000;
+          final int TIMEOUT_READ = 15000;
+
+        SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+        HttpParams connManagerParams = new BasicHttpParams();
+        HttpProtocolParams.setVersion(connManagerParams, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setUseExpectContinue(connManagerParams, true);
+        HttpProtocolParams.setUserAgent(connManagerParams,"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
+                + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
+
+        ConnPerRoute cpr = new ConnPerRoute() {
+            @Override
+            public int getMaxForRoute(HttpRoute httpRoute) {
+                return 50;
+            }
+        };
+        ConnManagerParams.setMaxConnectionsPerRoute(connManagerParams, cpr);
+
+        ConnManagerParams.setMaxTotalConnections(connManagerParams, MAX_TOTAL_CONNECTIONS);
+        //ConnManagerParams.setMaxConnectionsPerRoute(connManagerParams, new ConnPerRouteBean(MAX_CONNECTIONS_PER_ROUTE));
+
+        HttpConnectionParams.setConnectionTimeout(connManagerParams, TIMEOUT_CONNECT);
+        HttpConnectionParams.setSoTimeout(connManagerParams, TIMEOUT_READ);
+
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(connManagerParams, schemeRegistry);
+        httpClient = new DefaultHttpClient(cm, connManagerParams);
 
 
 

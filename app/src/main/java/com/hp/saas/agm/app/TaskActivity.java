@@ -153,7 +153,7 @@ public class TaskActivity extends Activity implements OnClickListener {
 
         @Override
         protected List<Entity> doInBackground(Integer... params) {
-            recentTasks = ApplicationManager.getSprintService().getStories();
+            recentTasks = getProjectTask();
             return recentTasks;
         }
 

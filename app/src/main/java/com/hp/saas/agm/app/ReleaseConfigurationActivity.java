@@ -2,6 +2,7 @@ package com.hp.saas.agm.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import com.hp.saas.agm.app.adapter.ReleaseExpandTreeAdapter;
+import com.hp.saas.agm.app.adapter.TeamConfigurationAdapter;
 import com.hp.saas.agm.app.view.ExpandedTreeView;
 import com.hp.saas.agm.app.view.LoadingView;
 import com.hp.saas.agm.core.model.Entity;
@@ -71,9 +73,14 @@ public class ReleaseConfigurationActivity extends Activity implements OnClickLis
         expandedTreeView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                ReleaseExpandTreeAdapter adapter = (ReleaseExpandTreeAdapter)parent.getAdapter();
+                ReleaseExpandTreeAdapter adapter = (ReleaseExpandTreeAdapter)parent.getExpandableListAdapter();
                 Entity release = (Entity)adapter.getChild(groupPosition, childPosition);
                 ApplicationManager.getSprintService().selectRelease(release);
+
+                Intent intent = new Intent(mContext, TeamConfigurationActivity.class);
+                startActivity(intent);
+                finish();
+
                 return false;
                /* TextView a = (TextView)v.findViewById(R.id.item_name);
                 ApplicationManager.getMessageService().show(a.getText().toString());
@@ -82,14 +89,6 @@ public class ReleaseConfigurationActivity extends Activity implements OnClickLis
         });
         new NewsAsyncTask(lvLoading).execute(0);
     }
-
-    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            Entity entity= (Entity) parent.getAdapter().getItem(position);
-            ApplicationManager.getMessageService().show(entity.getPropertyValue("name"));
-        }
-    };
 
     @Override
     public void onClick(View v) {

@@ -44,7 +44,6 @@ public class SprintService {
     final private Selector releaseSelector = new Selector();
     final private Selector sprintSelector = new Selector();
     final private Selector teamSelector = new Selector();
-    final private Selector storySelector = new Selector();
     final private Selector teamMemberSelector = new Selector();
 
     public SprintService(EntityService entityService, RestService restService, SharedPreferencesService sharedPreferencesService) {
@@ -54,127 +53,85 @@ public class SprintService {
 
     }
 
-    public void init() {
-/*        loadReleases();
-        loadSprints();
-        loadTeams();
-        loadStories();*/
-        //load from cache
-        //we do cache for: release, sprint, teams, teams members
-        initReleases();
-        initSprint();
-        initTeams();
-        initTeamMembers();
-    }
-
-    public void initReleases() {
-        try {
-            releaseSelector.values = EntityList.create(sharedPreferencesService.getFromFile("release"));
-        }catch(IOException e) {
-            releaseSelector.values = null;
+    public void loadState() {
+        String releaseId = sharedPreferencesService.getPreference("releaseId");
+        if(releaseId != null) {
+            this.releaseSelector.selected = new Entity("release", Integer.parseInt(releaseId));
         }
 
-        String releaseId = sharedPreferencesService.getPreference("selectedReleaseId");
-        if (releaseId != null) {
-            releaseSelector.selected = lookup(new EntityRef("release", Integer.parseInt(releaseId)));
-        }
-        releaseSelector.requestRunning = false;
-    }
-
-    public void initSprint() {
-        try {
-            sprintSelector.values = EntityList.create(sharedPreferencesService.getFromFile("sprint"));
-        }catch(IOException e) {
-            sprintSelector.values = null;
-        }
-        if (sprintSelector.values != null) {
-            selectSprint(findClosest(sprintSelector.values));
-        }
-
-    }
-
-    public void initTeams() {
-        try {
-            teamSelector.values = EntityList.create(sharedPreferencesService.getFromFile("team"));
-        }catch(IOException e) {
-            releaseSelector.values = null;
+        String sprintId = sharedPreferencesService.getPreference("sprintId");
+        if (sprintId != null) {
+            this.sprintSelector.selected = new Entity("sprint", Integer.parseInt(sprintId));
         }
 
         String teamId = sharedPreferencesService.getPreference("teamId");
-        if (teamId != null) {
-            teamSelector.selected = lookup(new EntityRef("team", Integer.parseInt(teamId)));
+        if(teamId != null) {
+            this.teamSelector.selected = new Entity("team", Integer.parseInt(teamId));
         }
-        teamSelector.requestRunning = false;
-    }
-    public void initTeamMembers() {
-        //only load my team member
-        try {
-            teamMemberSelector.values = EntityList.create(sharedPreferencesService.getFromFile("team_memeber"));
-        }catch(IOException e) {
-            releaseSelector.values = null;
-        }
-        teamMemberSelector.selected = null;
-        releaseSelector.requestRunning = false;
     }
 
-/*    private Entity loadEntity(Element element, String type) {
-        String id = element.getAttributeValue(type + "-id");
-        if(id != null) {
-            Entity entity = new Entity(type, Integer.valueOf(id));
-            entity.setProperty("name", element.getAttributeValue(type+"-name"));
-            return entity;
+    public void init() {
+        loadState();
+        loadValues();
+        LoadTeamMemberValues();
+    }
 
-        } else {
-            return null;
+    private void loadValues() {
+        synchronized (this) {
+            resetValues();
+            final Entity release = this.releaseSelector.selected;
+            if (release != null) {
+                teamSelector.requestRunning = true;
+                sprintSelector.requestRunning = true;
+                releaseSelector.requestRunning = true;
+                ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadTeams(release);
+                        loadSprints(release);
+                        loadReleases();
+                    }
+                });
+            } else {
+                this.releaseSelector.requestRunning = true;
+                ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadReleases();
+                    }
+                });
+            }
         }
-    }*/
+    }
+
+    private void LoadTeamMemberValues() {
+        synchronized (this) {
+            resetTeamMemberValues();
+            final Entity team = this.teamSelector.selected;
+            if (team != null) {
+                teamMemberSelector.requestRunning = true;
+                ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
+                    @Override
+                    public void run() {
+                       loadTeamMembers(team);
+                    }
+                });
+            }
+        }
+    }
+
+
 
     synchronized void resetValues() {
         teamSelector.values = null;
         sprintSelector.values = null;
         releaseSelector.values = null;
-        storySelector.values = null;
     }
 
-    public EntityList getReleasesFromFile() {
-        Selector release = (Selector)sharedPreferencesService.getObjectPreference("release");
-        if (release == null) {
-            return null;
-        }else {
-            return release.values;
-        }
-
+    synchronized void resetTeamMemberValues() {
+        teamMemberSelector.values = null;
     }
 
-    public void connectedTo(ServerType serverType) {
-        if(ServerType.AGM.equals(restService.getServerTypeIfAvailable())) {
-            synchronized (this) {
-                resetValues();
-                final Entity release = this.releaseSelector.selected;
-                if(release != null) {
-                    teamSelector.requestRunning = true;
-                    sprintSelector.requestRunning = true;
-                    releaseSelector.requestRunning = true;
-                    ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadTeams(release);
-                            loadSprints(release);
-                            loadReleases();
-                        }
-                    });
-                } else {
-                    this.releaseSelector.requestRunning = true;
-                   ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loadReleases();
-                        }
-                    });
-                }
-            }
-        }
-    }
 
     public synchronized Entity getRelease() {
         return releaseSelector.selected;
@@ -212,17 +169,16 @@ public class SprintService {
                 releaseSelector.values = list;
                 releaseSelector.requestRunning = false;
 
-                if(!releaseSelector.values.contains(releaseSelector.selected)) {
-                    selectRelease(findClosest(list));
+                if (!releaseSelector.values.contains(releaseSelector.selected)) {
+                    //selectRelease(findClosest(list));
                 }
-                //save release persistently
 
                 notifyAll();
             }
         }
     }
 
-    private void loadSprints() {
+    public void loadSprints() {
         loadSprints(releaseSelector.selected);
     }
 
@@ -230,11 +186,12 @@ public class SprintService {
         loadTeams(releaseSelector.selected);
     }
 
-    private void loadStories() {
-        loadStories(sprintSelector.selected, teamSelector.selected);
-    }
-
     private void loadSprints(final Entity release) {
+
+       /* if (release!= null && sprintSelector.values == null) {*/
+        //we only reload sprints on following condition:
+        // 1. we have selected release but have not init sprint
+        //
         EntityQuery query = new EntityQuery("release-cycle");
         query.addColumn("id", 1);
         query.addColumn("name", 1);
@@ -242,6 +199,7 @@ public class SprintService {
         query.addColumn("start-date", 1);
         query.addColumn("end-date", 1);
         query.setValue("parent-id", String.valueOf(release.getId()));
+        query.setPropertyResolved("parent-id", true);
         query.addOrder("start-date", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
         try {
@@ -251,55 +209,45 @@ public class SprintService {
                 sprintSelector.values = list;
                 sprintSelector.requestRunning = false;
 
-                if(!sprintSelector.values.contains(sprintSelector.selected)) {
+                if (!sprintSelector.values.contains(sprintSelector.selected)) {
                     selectSprint(findClosest(list));
                 }
                 notifyAll();
             }
         }
+
     }
 
-    private void loadStories(final Entity sprint, final Entity team) {
-        EntityQuery query = new EntityQuery("release-backlog-item");
-        query.addColumn("release-id", 1);
-        query.addColumn("entity-name", 1);
-        query.addColumn("status", 1);
-        query.addColumn("owner", 1);
-        query.addColumn("entity-id", 1);
-        query.addColumn("story-points", 1);
-        query.setValue("sprint-id", String.valueOf(sprint.getPropertyValue("id")));
-        query.setValue("team-id", String.valueOf(team.getPropertyValue("id")));
-        //query.addOrder("last-modified", SortOrder.ASCENDING);
+    private void loadTeamMembers(final Entity team) {
+
+        EntityQuery query = new EntityQuery("team-member");
+        query.addColumn("id", 1);
+        query.addColumn("name", 1);
+        query.addColumn("full-name", 1);
+        query.setValue("team-id", team.getPropertyValue("id"));
+        query.setPropertyResolved("team-id", true);
+        query.addOrder("name", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
         try {
             list = entityService.query(query);
         } finally {
             synchronized (this) {
-                storySelector.values = list;
-                storySelector.requestRunning = false;
+                teamMemberSelector.values = list;
+                teamMemberSelector.requestRunning = false;
+
                 notifyAll();
             }
         }
+
     }
 
-    //todo: workround for maas
-    private Entity findMaaS(List<Entity> list) {
-        for (Entity entity : list) {
-            if (entity.getPropertyValue("name").startsWith("SPMaaS")) {
-                return entity;
-            }
-        }
 
-        if(!list.isEmpty()) {
-            return list.get(0);
-        } else {
-            return null;
-        }
-    }
+
+
 
     private Entity findMyTeam(List<Entity> teams, Entity release, String userName) {
         String teamId = ApplicationManager.getTeamMemberService().getTeamId(userName, release.getPropertyValue("id"));
-        for (Entity entity: teams) {
+        for (Entity entity : teams) {
             if (entity.getProperty("id").equals(teamId)) {
                 return entity;
             }
@@ -308,28 +256,30 @@ public class SprintService {
     }
 
     private Entity findClosest(List<Entity> list) {
-        if(!list.isEmpty()) {
+        if (!list.isEmpty()) {
             final long now = System.currentTimeMillis();
             // sort according to time distance
 
             Collections.sort(list, new Comparator<Entity>() {
                 @Override
                 public int compare(Entity entity1, Entity entity2) {
-                    long result = (long)(distance(now, entity1) - distance(now, entity2));
+                    long result = (long) (distance(now, entity1) - distance(now, entity2));
                     if (result > 0) {
                         return 1;
-                    }
-                    else if (result == 0) {
+                    } else if (result == 0) {
                         return 0;
-                    }
-                    else if (result < 0) {
+                    } else if (result < 0) {
                         return -1;
                     }
 
                     return 0;
                 }
             });
-            return findMaaS(list);
+            if (!list.isEmpty()) {
+                return list.get(0);
+            } else {
+                return null;
+            }
         } else {
             return null;
         }
@@ -352,7 +302,7 @@ public class SprintService {
                     result.add(sprint);
                 }
             }
-        }else {
+        } else {
             result = null;
         }
 
@@ -360,24 +310,27 @@ public class SprintService {
     }
 
 
-
     private void loadTeams(final Entity release) {
         EntityQuery query = new EntityQuery("team");
         query.addColumn("id", 1);
         query.addColumn("name", 1);
         query.setValue("release-id", release.getPropertyValue("id"));
+        query.setPropertyResolved("release-id", true);
         query.addOrder("name", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
         try {
             list = entityService.query(query);
-        } finally {
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             synchronized (this) {
                 teamSelector.values = list;
                 teamSelector.requestRunning = false;
 
-                if(!teamSelector.values.contains(teamSelector.selected)) {
+                if (!teamSelector.values.contains(teamSelector.selected)) {
                     // TODO: choose my team
-                    selectTeam(findMyTeam(list, release, ApplicationManager.getUserService().getUser()));
+                    //selectTeam(findMyTeam(list, release, ApplicationManager.getUserService().getUser()));
                 }
                 notifyAll();
             }
@@ -417,7 +370,7 @@ public class SprintService {
     }*/
 
     public synchronized void selectRelease(final Entity release) {
-        if((release != null && release.equals(this.releaseSelector.selected)) ||
+        if ((release != null && release.equals(this.releaseSelector.selected)) ||
                 (release == null && this.releaseSelector.selected == null)) {
             return;
         }
@@ -427,6 +380,8 @@ public class SprintService {
         //cache selected Release
         sharedPreferencesService.setPreference("releaseId", String.valueOf(release.getId()));
 
+        //todo: update sprint and team metadata
+        loadValues();
         /*if(release != null) {
             if(ServerType.AGM.equals(restService.getServerTypeIfAvailable())) {
                 sprintSelector.requestRunning = true;
@@ -450,44 +405,49 @@ public class SprintService {
     }
 
     public synchronized void selectSprint(Entity sprint) {
-        if((sprint != null && sprint.equals(this.sprintSelector.selected)) ||
+        if ((sprint != null && sprint.equals(this.sprintSelector.selected)) ||
                 (sprint == null && this.sprintSelector.selected == null)) {
             return;
         }
 
         this.sprintSelector.selected = sprint;
+        sharedPreferencesService.setPreference("sprintId", String.valueOf(sprint.getId()));
         //fireSprintSelected();
     }
 
     public synchronized void selectTeam(Entity team) {
-        if((team != null && team.equals(this.teamSelector.selected)) ||
+        if ((team != null && team.equals(this.teamSelector.selected)) ||
                 (team == null && this.teamSelector.selected == null)) {
             return;
         }
 
         this.teamSelector.selected = team;
+        sharedPreferencesService.setPreference("teamId", String.valueOf(team.getId()));
+        loadTeamMembers(team);
         //fireTeamSelected();
     }
 
+
+
     public synchronized Entity getCurrentSprint() {
-        if(sprintSelector.values == null) {
+        if (sprintSelector.values == null) {
             return null;
         }
 
-        for(Entity sprint: sprintSelector.values) {
-            if(isCurrentSprint(sprint)) {
+        for (Entity sprint : sprintSelector.values) {
+            if (isCurrentSprint(sprint)) {
                 return sprint;
             }
         }
 
-        return  null;
+        return null;
     }
 
     private synchronized EntityList getValues(final Selector selector, final Runnable loader) {
-        while(true) {
-            if(selector.requestRunning) {
+        while (true) {
+            if (selector.requestRunning) {
                 // request running
-            } else if(selector.values != null) {
+            } else if (selector.values != null) {
                 return selector.values;
             } else {
                 selector.requestRunning = true;
@@ -502,7 +462,7 @@ public class SprintService {
 
     public synchronized EntityList getTeams() {
         final Entity release = this.releaseSelector.selected;
-        if(release != null) {
+        if (release != null) {
             return getValues(teamSelector, new Runnable() {
                 @Override
                 public void run() {
@@ -516,7 +476,7 @@ public class SprintService {
 
     public EntityList getSprints() {
         final Entity release = this.releaseSelector.selected;
-        if(release != null) {
+        if (release != null) {
             return getValues(sprintSelector, new Runnable() {
                 @Override
                 public void run() {
@@ -528,27 +488,6 @@ public class SprintService {
         }
     }
 
-    public synchronized EntityList getStories() {
-        final Entity sprint = this.sprintSelector.selected;
-        final Entity team = this.teamSelector.selected;
-        if(sprint != null && team != null) {
-            return getValues(storySelector, new Runnable() {
-                @Override
-                public void run() {
-                    loadStories();
-                }
-            });
-        } else {
-            return null;
-        }
-    }
-
-    public synchronized EntityList getStories(Boolean reload) {
-        if (reload) {
-            storySelector.values = null;
-        }
-        return getStories();
-    }
 
 
 
@@ -561,10 +500,6 @@ public class SprintService {
         });
     }
 
-    public Entity getCurrentRelease() {
-        return releaseSelector.selected;
-    }
-
     public static boolean isCurrentSprint(Entity sprint) {
         return "CURRENT".equalsIgnoreCase(sprint.getPropertyValue("tense"));
     }
@@ -572,7 +507,7 @@ public class SprintService {
     public static long distance(long now, Entity entity) {
         try {
             Date startDate = ALM_DATE_FORMAT.parse(entity.getPropertyValue("start-date"));
-            if(now < startDate.getTime()) {
+            if (now < startDate.getTime()) {
                 // future release
                 return startDate.getTime() - now;
             }
@@ -584,12 +519,12 @@ public class SprintService {
             calendar.add(Calendar.DATE, 1);
             endDate = calendar.getTime();
 
-            if(now > endDate.getTime()) {
+            if (now > endDate.getTime()) {
                 return now - endDate.getTime();
             }
 
             return 0;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return Long.MAX_VALUE;
         }
     }
@@ -598,7 +533,7 @@ public class SprintService {
         final long now = System.currentTimeMillis();
         try {
             Date startDate = ALM_DATE_FORMAT.parse(entity.getPropertyValue("start-date"));
-            if(now < startDate.getTime()) {
+            if (now < startDate.getTime()) {
                 // future release
                 return 1;
             }
@@ -610,22 +545,22 @@ public class SprintService {
             calendar.add(Calendar.DATE, 1);
             endDate = calendar.getTime();
 
-            if(now > endDate.getTime()) {
+            if (now > endDate.getTime()) {
                 return -1;
             }
 
             return 0;
-        } catch(Exception e) {
+        } catch (Exception e) {
             return -1;
         }
     }
 
     public Entity lookup(final EntityRef ref) {
-        if("release".equals(ref.type)) {
+        if ("release".equals(ref.type)) {
             return find(releaseSelector, ref);
-        } else if("release-cycle".equals(ref.type)) {
+        } else if ("release-cycle".equals(ref.type)) {
             return find(sprintSelector, ref);
-        } else if("team".equals(ref.type)) {
+        } else if ("team".equals(ref.type)) {
             return find(teamSelector, ref);
         } else {
             return null;
@@ -633,9 +568,9 @@ public class SprintService {
     }
 
     private synchronized Entity find(Selector selector, EntityRef ref) {
-        if(selector.values != null) {
+        if (selector.values != null) {
             int i = selector.values.indexOf(new Entity(ref.type, ref.id));
-            if(i >= 0) {
+            if (i >= 0) {
                 return selector.values.get(i);
             }
         }
@@ -663,7 +598,7 @@ public class SprintService {
 
     }
 
-    private static class Selector implements Serializable{
+    private static class Selector implements Serializable {
         private boolean requestRunning;
         private Entity selected;
         private EntityList values;

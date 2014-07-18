@@ -12,7 +12,10 @@ import android.widget.ListPopupWindow;
 import com.hp.saas.agm.app.adapter.SprintAdapter;
 import com.hp.saas.agm.app.adapter.StatusAdapter;
 import com.hp.saas.agm.app.adapter.TeamAdapter;
+import com.hp.saas.agm.app.adapter.spinner.SprintSpinnerAdapter;
 import com.hp.saas.agm.app.view.popup.*;
+import com.hp.saas.agm.core.entity.EntityQuery;
+import com.hp.saas.agm.core.entity.SortOrder;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
@@ -31,9 +34,14 @@ public class MainActivity extends Activity implements OnClickListener {
     private Context mContext;
     private ReleaseBacklogAdapter adapter;
 
-    private TextView tvSprintFilter;
-    private TextView tvOwnerFilter;
-    private TextView tvStatusFilter;
+    private Spinner spSprintFilter;
+    private Spinner spOwnerFilter;
+    private Spinner spStatusFilter;
+
+    //testing
+    ArrayList<String> arr_cars = new ArrayList<String>();
+    String selected_car = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +56,10 @@ public class MainActivity extends Activity implements OnClickListener {
     private void findView() {
         lvReleaseBacklog = (CustomListView)findViewById(R.id.lv_release_backlog);
         lvLoading = (LoadingView)findViewById(R.id.loading);
-        tvSprintFilter = (TextView) findViewById(R.id.sprint_filter);
-        tvOwnerFilter = (TextView) findViewById(R.id.owner_filter);
-        tvStatusFilter = (TextView) findViewById(R.id.status_filter);
+        spSprintFilter = (Spinner) findViewById(R.id.sprint_filter);
+
+        spOwnerFilter = (Spinner) findViewById(R.id.owner_filter);
+        spStatusFilter = (Spinner) findViewById(R.id.status_filter);
     }
 
     private void init() {
@@ -77,10 +86,20 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         });
 
+
+        arr_cars.add("Rolls Royce Phantom");
+        arr_cars.add("Ferrari California");
+
+        /*//ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
+        //spSprintFilter.setAdapter(adapter);*/
+        SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
+        spSprintFilter.setAdapter(spinnerAdapter);
+        spSprintFilter.setSelection(1);
+
         //click filter bar
-        tvSprintFilter.setOnClickListener(filterListener);
+        /*tvSprintFilter.setOnClickListener(filterListener);
         tvOwnerFilter.setOnClickListener(filterListener);
-        tvStatusFilter.setOnClickListener(filterListener);
+        tvStatusFilter.setOnClickListener(filterListener);*/
 
         new NewsAsyncTask(lvLoading).execute(0);
     }
@@ -181,6 +200,34 @@ public class MainActivity extends Activity implements OnClickListener {
 
     }
 
+    private EntityList getStories(final Entity sprint, final Entity team) {
+        EntityQuery query = new EntityQuery("release-backlog-item");
+        query.addColumn("release-id", 1);
+        query.addColumn("entity-name", 1);
+        query.addColumn("status", 1);
+        query.addColumn("owner", 1);
+        query.addColumn("entity-id", 1);
+        query.addColumn("story-points", 1);
+        query.setValue("sprint-id", String.valueOf(sprint.getPropertyValue("id")));
+        query.setValue("team-id", String.valueOf(team.getPropertyValue("id")));
+        //query.addOrder("last-modified", SortOrder.ASCENDING);
+        EntityList list = EntityList.empty();
+        try {
+            list = ApplicationManager.getEntityService().query(query);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }finally {
+
+        }
+
+        if (list.size() > 0) {
+            return list;
+        }else {
+            return null;
+        }
+
+    }
+
     private class NewsAsyncTask extends AsyncTaskBase {
         EntityList recentReleaseBacklog = null;
 
@@ -191,7 +238,9 @@ public class MainActivity extends Activity implements OnClickListener {
         @Override
         protected Integer doInBackground(Integer... params) {
             int result = -1;
-            recentReleaseBacklog = ApplicationManager.getSprintService().getStories();
+
+            //todo: try to avoid loadSprints every time
+            recentReleaseBacklog = getStories(ApplicationManager.getSprintService().getSprint(), ApplicationManager.getSprintService().getTeam());
             if (recentReleaseBacklog.size() > 0) {
                 result = 1;
             }
@@ -218,7 +267,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         @Override
         protected List<Entity> doInBackground(Integer... params) {
-            recentStories = ApplicationManager.getSprintService().getStories(true);
+            recentStories = getStories(ApplicationManager.getSprintService().getSprint(), ApplicationManager.getSprintService().getTeam());
             return recentStories;
         }
 

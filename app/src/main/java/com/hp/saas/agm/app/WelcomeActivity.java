@@ -69,7 +69,9 @@ public class WelcomeActivity extends Activity {
                         //load meta information from cache
                         ApplicationManager.getSprintService().init();
 
-                        if (ApplicationManager.getSprintService().getCurrentRelease() == null) {
+                        //todo: for testing
+
+                        if (ApplicationManager.getSprintService().getRelease() == null || ApplicationManager.getSprintService().getTeam() == null) {
                             //set up release
                             Intent intent = new Intent(mContext, ReleaseConfigurationActivity.class);
                             startActivity(intent);

@@ -9,25 +9,23 @@
                   android:layout_height="match_parent"
                   android:orientation="vertical">
         <TextView
-                android:id="@+id/tv_release_title"
+                android:id="@+id/tv_team_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="25dp"
+                android:textSize="20sp"
                 android:padding="10dp"
-                android:text="(1/2)  Choose your release"
+                android:text="(2/2)  choose your team"
                 android:background="@color/blue"
                 android:textStyle="bold"
                 android:textColor="@color/whites"
                 />
 
-        <com.hp.saas.agm.app.view.ExpandedTreeView
-                android:id="@+id/release_expand_view"
+        <com.hp.saas.agm.app.view.CustomListView
+                android:id="@+id/lv_team"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@android:color/transparent"
                 android:cacheColorHint="@android:color/transparent"
-                android:divider="@color/gray"
-                android:transcriptMode="normal" />
+                />
 
 
 

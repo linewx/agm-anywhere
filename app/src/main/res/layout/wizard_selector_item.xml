@@ -4,32 +4,27 @@
         android:id="@+id/rl_story_release"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:orientation="horizontal"
         android:background="@color/whites">
 
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
+        <ImageView
+                android:id="@+id/item_badge"
+                android:layout_height="fill_parent"
+                android:layout_width="5dp"
+                android:contentDescription="@string/app_name"
+                android:scaleType="fitXY"
+                android:background="@color/gray"/>
 
-    <LinearLayout android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
         <TextView
                 android:id="@+id/item_name"
-                android:padding="2dp"
+                android:padding="10dp"
                 android:gravity="center_vertical"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="SAW Application Backlog"
-                android:textSize="18sp"/>
-        <!--<TextView
-                android:id="@+id/item_date"
-                android:padding="2dp"
-                android:gravity="center_vertical"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="   2014/10/12~2014/5/10"/>-->
+                android:text="Item Name"
+                android:textSize="16sp"/>
     </LinearLayout>
-
-
 
 
     <ImageView

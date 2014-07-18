@@ -154,19 +154,6 @@ public class EntityService {
     }
     private EntityList doQuery(EntityQuery query, boolean complete) {
         InputStream is = queryForStream(query);
-        if (entityQueryListener != null) {
-            try {
-                byte[] byteArray = IOUtils.toByteArray(is);
-                is = null;
-                is = new ByteArrayInputStream(byteArray);
-                fireQueryEvent(query, byteArray);
-            }catch(IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
         if("defect-link".equals(query.getEntityType()) && restService.getServerStrategy().hasSecondLevelDefectLink()) {
             return DefectLinkList.create(is, complete);
         } else {
