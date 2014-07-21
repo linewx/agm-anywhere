@@ -3,6 +3,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:orientation="horizontal"
+              android:background="@color/whites"
         >
 
     <TextView style="?android:attr/spinnerItemStyle"
@@ -13,7 +14,7 @@
               android:text="test"
               android:gravity="center_horizontal"
               android:id="@+id/item_name"
-              android:textColor="@color/whites"/>
+              android:textColor="@color/blue"/>
 </LinearLayout>
 
 

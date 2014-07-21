@@ -55,7 +55,7 @@ public class SprintService {
 
     public void loadState() {
         String releaseId = sharedPreferencesService.getPreference("releaseId");
-        if(releaseId != null) {
+        if (releaseId != null) {
             this.releaseSelector.selected = new Entity("release", Integer.parseInt(releaseId));
         }
 
@@ -65,7 +65,7 @@ public class SprintService {
         }
 
         String teamId = sharedPreferencesService.getPreference("teamId");
-        if(teamId != null) {
+        if (teamId != null) {
             this.teamSelector.selected = new Entity("team", Integer.parseInt(teamId));
         }
     }
@@ -113,13 +113,12 @@ public class SprintService {
                 ThreadPoolManager.getInstance().executeOnPooledThread(new Runnable() {
                     @Override
                     public void run() {
-                       loadTeamMembers(team);
+                        loadTeamMembers(team);
                     }
                 });
             }
         }
     }
-
 
 
     synchronized void resetValues() {
@@ -242,9 +241,6 @@ public class SprintService {
     }
 
 
-
-
-
     private Entity findMyTeam(List<Entity> teams, Entity release, String userName) {
         String teamId = ApplicationManager.getTeamMemberService().getTeamId(userName, release.getPropertyValue("id"));
         for (Entity entity : teams) {
@@ -320,10 +316,9 @@ public class SprintService {
         EntityList list = EntityList.empty();
         try {
             list = entityService.query(query);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             synchronized (this) {
                 teamSelector.values = list;
                 teamSelector.requestRunning = false;
@@ -428,7 +423,6 @@ public class SprintService {
     }
 
 
-
     public synchronized Entity getCurrentSprint() {
         if (sprintSelector.values == null) {
             return null;
@@ -487,8 +481,6 @@ public class SprintService {
             return null;
         }
     }
-
-
 
 
     public EntityList getReleases() {
@@ -567,6 +559,31 @@ public class SprintService {
         }
     }
 
+    public int lookupCurrentSprintIndex() {
+        return sprintSelector.values.indexOf(sprintSelector.selected);
+    }
+
+    public int lookupIndex(final EntityRef ref) {
+        if ("release".equals(ref.type)) {
+            return indexOf(releaseSelector, ref);
+        } else if ("release-cycle".equals(ref.type)) {
+            return indexOf(sprintSelector, ref);
+        } else if ("team".equals(ref.type)) {
+            return indexOf(teamSelector, ref);
+        } else {
+            return -1;
+        }
+    }
+
+    private synchronized int indexOf(Selector selector, EntityRef ref) {
+        if (selector.values != null) {
+            int i = selector.values.indexOf(new Entity(ref.type, ref.id));
+            return i;
+        }
+
+        return -1;
+    }
+
     private synchronized Entity find(Selector selector, EntityRef ref) {
         if (selector.values != null) {
             int i = selector.values.indexOf(new Entity(ref.type, ref.id));
@@ -576,6 +593,8 @@ public class SprintService {
         }
         return null;
     }
+
+
 
 
 

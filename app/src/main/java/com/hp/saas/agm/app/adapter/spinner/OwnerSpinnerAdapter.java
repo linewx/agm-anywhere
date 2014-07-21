@@ -1,27 +1,28 @@
 package com.hp.saas.agm.app.adapter.spinner;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.hp.saas.agm.app.R;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
-import com.hp.saas.agm.app.R;
 
-public class SprintSpinnerAdapter extends BaseAdapter {
-    protected static final String TAG = "SprintAdapter";
+import java.util.ArrayList;
+
+public class OwnerSpinnerAdapter extends BaseAdapter {
+    protected static final String TAG = "OwnerSpinnerAdapter";
     private Context mContext;
-    private EntityList lists;
+    private ArrayList<String> lists;
     private String selected;
     private LayoutInflater mInflater;
 
-    public SprintSpinnerAdapter(Context context, EntityList sprintList, String selected) {
+    public OwnerSpinnerAdapter(Context context, ArrayList<String> ownerList, String selected) {
         this.mContext = context;
-        this.lists = sprintList;
+        this.lists = ownerList;
         this.selected = selected;
 
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,8 +59,8 @@ public class SprintSpinnerAdapter extends BaseAdapter {
         }
 
         text = (TextView) view.findViewById(R.id.item_name);
-        Entity item = lists.get(position);
-        text.setText(item.getPropertyValue("name"));
+        String item = lists.get(position);
+        text.setText(item);
         return view;
     }
 
@@ -71,7 +72,7 @@ public class SprintSpinnerAdapter extends BaseAdapter {
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         final Holder holder;
-        Entity item = lists.get(position);
+        String item = lists.get(position);
         if (convertView == null) {
             convertView = View.inflate(mContext, R.layout.spinner_item,
                     null);
@@ -85,7 +86,7 @@ public class SprintSpinnerAdapter extends BaseAdapter {
             holder = (Holder) convertView.getTag();
         }
 
-        holder.tvItem.setText(item.getPropertyValue("name"));
+        holder.tvItem.setText(item);
 
         if (parent.isSelected()) {
             holder.ivBadge.setBackgroundColor(mContext.getResources().getColor(R.color.blue));

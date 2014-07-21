@@ -89,4 +89,9 @@
     <string name="task_description">Description</string>
     <string name="task_assigned">Assigned</string>
     <string name="task_status">Status</string>
+
+    <!-- spinner prompt -->
+    <string name="spinner_prompt_sprint">Current Sprint</string>
+    <string name="spinner_prompt_owner">All Stories</string>
+    <string name="spinner_prompt_status">All Status</string>
 </resources>

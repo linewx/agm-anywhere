@@ -1,6 +1,7 @@
 package com.hp.saas.agm.app;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,7 +13,9 @@ import android.widget.ListPopupWindow;
 import com.hp.saas.agm.app.adapter.SprintAdapter;
 import com.hp.saas.agm.app.adapter.StatusAdapter;
 import com.hp.saas.agm.app.adapter.TeamAdapter;
+import com.hp.saas.agm.app.adapter.spinner.OwnerSpinnerAdapter;
 import com.hp.saas.agm.app.adapter.spinner.SprintSpinnerAdapter;
+import com.hp.saas.agm.app.adapter.spinner.StatusSpinnerAdapter;
 import com.hp.saas.agm.app.view.popup.*;
 import com.hp.saas.agm.core.entity.EntityQuery;
 import com.hp.saas.agm.core.entity.SortOrder;
@@ -54,8 +57,8 @@ public class MainActivity extends Activity implements OnClickListener {
     }
 
     private void findView() {
-        lvReleaseBacklog = (CustomListView)findViewById(R.id.lv_release_backlog);
-        lvLoading = (LoadingView)findViewById(R.id.loading);
+        lvReleaseBacklog = (CustomListView) findViewById(R.id.lv_release_backlog);
+        lvLoading = (LoadingView) findViewById(R.id.loading);
         spSprintFilter = (Spinner) findViewById(R.id.sprint_filter);
 
         spOwnerFilter = (Spinner) findViewById(R.id.owner_filter);
@@ -76,8 +79,8 @@ public class MainActivity extends Activity implements OnClickListener {
 
         lvReleaseBacklog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-                Entity entity= (Entity) parent.getAdapter().getItem(position);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Entity entity = (Entity) parent.getAdapter().getItem(position);
                 Bundle data = new Bundle();
                 data.putSerializable("release", entity);
                 Intent intent = new Intent(mContext, StoryDetailActivity.class);
@@ -93,14 +96,41 @@ public class MainActivity extends Activity implements OnClickListener {
         /*//ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
         //spSprintFilter.setAdapter(adapter);*/
         //SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter<String>(MainActivity.this, android.R.layout.simple_spinner_item, arr_cars);
-        SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter(mContext, ApplicationManager.getSprintService().getSprints(), "selected");
-        spSprintFilter.setAdapter(spinnerAdapter);
-        spSprintFilter.setSelection(1);
 
-        //click filter bar
-        /*tvSprintFilter.setOnClickListener(filterListener);
-        tvOwnerFilter.setOnClickListener(filterListener);
-        tvStatusFilter.setOnClickListener(filterListener);*/
+
+        //init sprint filter
+        SprintSpinnerAdapter spinnerAdapter = new SprintSpinnerAdapter(mContext, ApplicationManager.getSprintService().getSprints(), "selected");
+
+        spSprintFilter.setAdapter(spinnerAdapter);
+        //spSprintFilter.setSelection(ApplicationManager.getSprintService().lookupCurrentSprintIndex());
+
+
+        //init owner filter
+        ArrayList<String> ownerList = new ArrayList<String>();
+        ownerList.add("All Story");
+        ownerList.add("My Story");
+
+        OwnerSpinnerAdapter ownerAdapter = new OwnerSpinnerAdapter(mContext, ownerList, "All");
+        spOwnerFilter.setAdapter(ownerAdapter);
+        //spOwnerFilter.setSelection(0);
+
+        //init satus filter
+        ArrayList<String> statusList = new ArrayList<String>();
+        statusList.add("All Status");
+        statusList.add("New");
+        statusList.add("In Progress");
+        statusList.add("In Testing");
+        statusList.add("Done");
+
+
+        StatusSpinnerAdapter statusAdapter = new StatusSpinnerAdapter(mContext, statusList, "All");
+        spStatusFilter.setAdapter(statusAdapter);
+        //spStatusFilter.setSelection(0);
+
+        spSprintFilter.setOnItemSelectedListener(filterListener);
+        spOwnerFilter.setOnItemSelectedListener(filterListener);
+        spStatusFilter.setOnItemSelectedListener(filterListener);
+
 
         new NewsAsyncTask(lvLoading).execute(0);
     }
@@ -110,23 +140,16 @@ public class MainActivity extends Activity implements OnClickListener {
 
     }
 
-    public OnClickListener filterListener = new OnClickListener() {
+    public AdapterView.OnItemSelectedListener filterListener =new AdapterView.OnItemSelectedListener() {
         @Override
-        public void onClick(View v) {
+        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
             lvReleaseBacklog.fireRefreshEvent();
-            /*if (!releaseBacklog.isEmpty()) {
-                if(v.getId() == R.id.sprint_filter) {
-                    //do switch sprint
-                    clickSprint(v);
-                }else if(v.getId() == R.id.owner_filter) {
-                    //do filter owner
-                    clickOwner(v);
-                }else if(v.getId() == R.id.status_filter) {
-                    //do filter status
-                    clickStatus(v);
-                }
-            }*/
+            // your code here
+        }
 
+        @Override
+        public void onNothingSelected(AdapterView<?> parentView) {
+            // your code here
         }
     };
 
@@ -135,6 +158,7 @@ public class MainActivity extends Activity implements OnClickListener {
             com.hp.saas.agm.app.view.popup.ListPopupWindow popupWindow = new com.hp.saas.agm.app.view.popup.ListPopupWindow(mContext);
             popupWindow.setTitle("Status");
             ArrayList<String> statusList = new ArrayList<String>();
+            statusList.add("New");
             statusList.add("New");
             statusList.add("In Progress");
             statusList.add("In Testing");
@@ -215,18 +239,54 @@ public class MainActivity extends Activity implements OnClickListener {
         EntityList list = EntityList.empty();
         try {
             list = ApplicationManager.getEntityService().query(query);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
         }
 
         if (list.size() > 0) {
             return list;
-        }else {
+        } else {
             return null;
         }
 
+    }
+
+    private EntityList getReleaseBacklog(Entity sprint, Entity team, String owner, String status) {
+        EntityList result = getStories(sprint, team);
+        result = filterOwner(result, owner);
+        result = filterStatus(result, status);
+
+        return result;
+    }
+
+    private EntityList filterOwner(EntityList backlogList, String owner) {
+        EntityList result = EntityList.empty();
+        if (owner.equals("All Story")) {
+            result.addAll(backlogList);
+        } else if (owner.equals("My Story")) {
+            for (Entity entity : backlogList) {
+                if (entity.getPropertyValue("owner").equals(ApplicationManager.getUserService().getUser())) {
+                    result.add(entity);
+                }
+            }
+        }
+        return result;
+    }
+
+    private EntityList filterStatus(EntityList backlogList, String status) {
+        EntityList result = EntityList.empty();
+        if (status.equals("All Status")) {
+            result.addAll(backlogList);
+        } else {
+            for (Entity entity : backlogList) {
+                if (entity.getPropertyValue("status").equals(status)) {
+                    result.add(entity);
+                }
+            }
+        }
+        return result;
     }
 
     private class NewsAsyncTask extends AsyncTaskBase {
@@ -268,7 +328,13 @@ public class MainActivity extends Activity implements OnClickListener {
 
         @Override
         protected List<Entity> doInBackground(Integer... params) {
-            recentStories = getStories(ApplicationManager.getSprintService().getSprint(), ApplicationManager.getSprintService().getTeam());
+            //recentStories = getStories(ApplicationManager.getSprintService().getSprint(), ApplicationManager.getSprintService().getTeam());
+
+            recentStories = getReleaseBacklog((Entity)spSprintFilter.getSelectedItem(),
+                                                ApplicationManager.getSprintService().getTeam(),
+                                                (String)spOwnerFilter.getSelectedItem(),
+                                                (String)spStatusFilter.getSelectedItem()
+                            );
             return recentStories;
         }
 
@@ -293,7 +359,6 @@ public class MainActivity extends Activity implements OnClickListener {
         }
 
     }
-
 
 
 }
