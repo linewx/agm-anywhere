@@ -30,15 +30,7 @@
                 android:name="com.hp.saas.agm.app.MainActivity"
                 android:label="Sprint">
         </activity>
-        <activity
-                android:name="com.hp.saas.agm.app.StoryActivity"
-                android:label="Story">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.hp.saas.agm.app.MainActivity" />
-        </activity>
-
-        <activity
+       <activity
                 android:name="com.hp.saas.agm.app.StoryDetailActivity"
                 android:label="Story">
         </activity>
