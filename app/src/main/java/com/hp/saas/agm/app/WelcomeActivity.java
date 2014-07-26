@@ -70,7 +70,6 @@ public class WelcomeActivity extends Activity {
                         ApplicationManager.getSprintService().init();
 
                         //todo: for testing
-
                         if (ApplicationManager.getSprintService().getRelease() == null || ApplicationManager.getSprintService().getTeam() == null) {
                             //set up release
                             Intent intent = new Intent(mContext, ReleaseConfigurationActivity.class);

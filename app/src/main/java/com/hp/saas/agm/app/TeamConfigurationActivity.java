@@ -59,8 +59,7 @@ public class TeamConfigurationActivity extends Activity implements OnClickListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
                 Entity entity= (Entity) parent.getAdapter().getItem(position);
-                Bundle data = new Bundle();
-                data.putSerializable("release", entity);
+                ApplicationManager.getSprintService().selectTeam(entity);
                 Intent intent = new Intent(mContext, MainActivity.class);
                 startActivity(intent);
                 finish();
