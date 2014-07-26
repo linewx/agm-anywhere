@@ -8,10 +8,8 @@ import android.os.StrictMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import com.hp.saas.agm.app.adapter.ReleaseExpandTreeAdapter;
-import com.hp.saas.agm.app.adapter.TeamConfigurationAdapter;
 import com.hp.saas.agm.app.view.ExpandedTreeView;
 import com.hp.saas.agm.app.view.LoadingView;
 import com.hp.saas.agm.core.model.Entity;
@@ -40,7 +38,7 @@ public class ReleaseConfigurationActivity extends Activity implements OnClickLis
         }
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_release_configuration);
+        setContentView(R.layout.config_release_activity);
 
         mContext = this;
         findView();

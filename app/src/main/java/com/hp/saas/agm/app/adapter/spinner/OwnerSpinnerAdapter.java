@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.hp.saas.agm.app.R;
-import com.hp.saas.agm.core.model.Entity;
-import com.hp.saas.agm.core.model.parser.EntityList;
 
 import java.util.ArrayList;
 
@@ -53,7 +51,7 @@ public class OwnerSpinnerAdapter extends BaseAdapter {
         TextView text;
 
         if (convertView == null) {
-            view = mInflater.inflate(R.layout.spinner_content, parent, false);
+            view = mInflater.inflate(R.layout.common_spinner_header, parent, false);
         } else {
             view = convertView;
         }
@@ -74,7 +72,7 @@ public class OwnerSpinnerAdapter extends BaseAdapter {
         final Holder holder;
         String item = lists.get(position);
         if (convertView == null) {
-            convertView = View.inflate(mContext, R.layout.spinner_item,
+            convertView = View.inflate(mContext, R.layout.common_spinner_item,
                     null);
             holder = new Holder();
             holder.tvItem = (TextView) convertView.findViewById(R.id.item_name);

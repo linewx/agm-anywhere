@@ -45,7 +45,7 @@ public class TaskAdapter extends BaseAdapter{
         final Holder holder;
         Entity task = taskList.get(position);
         if (convertView == null) {
-            convertView = View.inflate(context, R.layout.task_item,
+            convertView = View.inflate(context, R.layout.task_task_adapter_item,
                     null);
             holder = new Holder();
             //holder.tvRemaining = (TextView) convertView.findViewById(R.id.task_remaining);

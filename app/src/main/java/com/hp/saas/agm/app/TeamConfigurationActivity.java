@@ -30,7 +30,7 @@ public class TeamConfigurationActivity extends Activity implements OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_team_configuration);
+        setContentView(R.layout.config_team_activity);
 
         mContext = this;
         findView();

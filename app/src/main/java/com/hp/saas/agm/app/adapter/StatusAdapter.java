@@ -45,7 +45,7 @@ public class StatusAdapter extends BaseAdapter {
 		final Holder holder;
 		String status = lists.get(position);
 		if (convertView == null) {
-			convertView = View.inflate(mContext, R.layout.status_item,
+			convertView = View.inflate(mContext, R.layout.story_status_adapter_item,
                     null);
             holder = new Holder();
 			holder.tvStatus = (TextView) convertView.findViewById(R.id.status_name);

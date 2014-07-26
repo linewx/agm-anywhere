@@ -51,7 +51,7 @@ public class ReleaseBacklogAdapter extends BaseAdapter {
 		final Holder holder;
 		Entity story = lists.get(position);
 		if (convertView == null) {
-			convertView = View.inflate(mContext, R.layout.fragment_story_item,
+			convertView = View.inflate(mContext, R.layout.main_story_adapter_item,
                     null);
 			holder = new Holder();
 			holder.tv_status = (TextView) convertView.findViewById(R.id.rbi_status);

@@ -1,7 +1,6 @@
 package com.hp.saas.agm.app.adapter.spinner;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +51,7 @@ public class SprintSpinnerAdapter extends BaseAdapter {
         TextView text;
 
         if (convertView == null) {
-            view = mInflater.inflate(R.layout.spinner_content, parent, false);
+            view = mInflater.inflate(R.layout.common_spinner_header, parent, false);
         } else {
             view = convertView;
         }
@@ -73,7 +72,7 @@ public class SprintSpinnerAdapter extends BaseAdapter {
         final Holder holder;
         Entity item = lists.get(position);
         if (convertView == null) {
-            convertView = View.inflate(mContext, R.layout.spinner_item,
+            convertView = View.inflate(mContext, R.layout.common_spinner_item,
                     null);
             holder = new Holder();
             holder.tvItem = (TextView) convertView.findViewById(R.id.item_name);

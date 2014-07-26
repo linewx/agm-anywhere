@@ -60,7 +60,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_story_detail);
+        setContentView(R.layout.story_activity);
 
         mContext = this;
         findView();
@@ -76,7 +76,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.story_detail, menu);
+        inflater.inflate(R.menu.story_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

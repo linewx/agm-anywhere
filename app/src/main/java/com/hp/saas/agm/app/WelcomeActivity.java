@@ -28,7 +28,7 @@ public class WelcomeActivity extends Activity {
         }
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_welcome);
+		setContentView(R.layout.welcome_activity);
 		mContext = this;
 		findView();
 		init();

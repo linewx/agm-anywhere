@@ -1,7 +1,6 @@
 package com.hp.saas.agm.app;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
-import android.widget.ListPopupWindow;
 import com.hp.saas.agm.app.adapter.SprintAdapter;
 import com.hp.saas.agm.app.adapter.StatusAdapter;
 import com.hp.saas.agm.app.adapter.TeamAdapter;
@@ -18,7 +16,6 @@ import com.hp.saas.agm.app.adapter.spinner.SprintSpinnerAdapter;
 import com.hp.saas.agm.app.adapter.spinner.StatusSpinnerAdapter;
 import com.hp.saas.agm.app.view.popup.*;
 import com.hp.saas.agm.core.entity.EntityQuery;
-import com.hp.saas.agm.core.entity.SortOrder;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.core.model.Entity;
 import com.hp.saas.agm.core.model.parser.EntityList;
@@ -49,7 +46,7 @@ public class MainActivity extends Activity implements OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_activity);
 
         mContext = this;
         findView();

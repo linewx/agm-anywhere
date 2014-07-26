@@ -45,7 +45,7 @@ public class SprintAdapter extends BaseAdapter {
 		final Holder holder;
 		Entity item = lists.get(position);
 		if (convertView == null) {
-			convertView = View.inflate(mContext, R.layout.selector_item,
+			convertView = View.inflate(mContext, R.layout.common_selector_adapter_item,
                     null);
             holder = new Holder();
 			holder.tvItem = (TextView) convertView.findViewById(R.id.item_name);
