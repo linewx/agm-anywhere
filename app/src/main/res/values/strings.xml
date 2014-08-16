@@ -10,6 +10,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_save">Save</string>
+    <string name="action_new">New</string>
     <string name="et_account_hint">Email address</string>
     <string name="et_password_hint">Password</string>
     <string name="login">Sign in</string>
@@ -64,6 +65,14 @@
     <string name="story_label_sprint">Sprint</string>
     <string name="story_sprint">Sprint</string>
     <string name="story_label_point">Point</string>
+
+    <!-- new task -->
+    <string name="new_task_backlog_item">Backlog item</string>
+    <string name="new_task_description">Description</string>
+    <string name="new_task_assignee">Assignee</string>
+    <string name="new_task_estimated">Estimated(Hours)</string>
+
+
 
     <!-- tab -->
     <string name="story_detail">Detail</string>

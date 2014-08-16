@@ -340,7 +340,8 @@ public class EntityService {
         //String xml = new XMLOutputter().outputString(entity.toElement(null));
         String xml = "";
         try {
-            xml = entity.toElement(null).toString();
+            Element element = entity.toElement(null);
+            xml = XmlUtils.getStringFromXml(element, true);
         }catch(Exception e) {
             //
         }

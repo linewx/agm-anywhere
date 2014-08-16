@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/whites">
+    <com.hp.saas.agm.app.view.CustomerScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <LinearLayout android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="vertical"
+                      android:divider="@drawable/divider"
+                      android:id="@+id/ll_new_task"
+                      android:showDividers="middle">
+
+
+            <TextView
+                    android:id="@+id/tv_new_task_backlog_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/new_task_backlog_item"
+                    android:textStyle="bold"
+                    android:textSize="18sp"/>
+
+            <EditText
+                    android:id="@+id/et_new_task_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:minLines="1"
+                    android:hint="Description"
+                    android:background="@drawable/login_et_bg"
+                    android:textSize="16sp"/>
+
+
+            <!--<RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    android:padding="10dp"
+                    android:orientation="horizontal"
+                    android:background="@color/gray_background"/>-->
+
+            <RelativeLayout
+                    android:id="@+id/rl_new_task_assignee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/new_task_label_assignee"
+                        android:padding="2dp"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="@string/new_task_assignee"
+                        android:textStyle="bold"
+                        android:textSize="18sp"/>
+
+                <TextView
+                        android:id="@+id/tv_new_task_assignee"
+                        android:padding="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_toLeftOf="@+id/story_release_edit"
+                        android:textSize="18sp"/>
+
+                <ImageView
+                        android:id="@+id/story_release_edit"
+                        android:padding="4dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/gray_right_arrow"
+                        android:textSize="18sp"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:id="@+id/rl_new_task_estimated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:id="@+id/tv_new_task_label_estimated"
+                        android:padding="2dp"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="@string/new_task_estimated"
+                        android:textStyle="bold"
+                        android:textSize="18sp"/>
+                <LinearLayout
+                        android:id="@+id/dummy_focus"
+                        android:focusable="true" android:focusableInTouchMode="true"
+                        android:layout_width="0px" android:layout_height="0px"
+                        android:orientation="vertical"
+                        android:layout_toLeftOf="@+id/story_point"/>
+                <EditText
+                        android:id="@+id/et_new_task_estimated"
+                        android:padding="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_toLeftOf="@+id/story_point_edit"
+                        android:inputType="number"
+                        android:background="@drawable/login_et_bg"
+                        android:layout_centerVertical="true"
+                        android:minWidth="20dp"
+                        android:textSize="18sp"/>
+
+                <ImageView
+                        android:id="@+id/story_point_edit"
+                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_action_edit"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                    android:layout_marginTop="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                <Button
+                        android:id="@+id/btn_new_task_cancel"
+                        android:layout_margin="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/blue"
+                        android:text="Cancel"
+                        android:textColor="@color/whites"
+                        android:layout_weight="1"/>
+
+                <Button
+                        android:id="@+id/btn_new_task_save"
+                        android:layout_margin="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/green"
+                        android:text="Save"
+                        android:textColor="@color/whites"
+                        android:layout_weight="1"
+                        />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </com.hp.saas.agm.app.view.CustomerScrollView>
+
+
+
+    <com.hp.saas.agm.app.view.LoadingView
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+</RelativeLayout>
+

@@ -30,6 +30,10 @@ feature
 
 * commit to github -- done
 * autodetect release and team
+* get teammembers sync
+* update story
+* update task
+* swtich back between activities
 
 
 Issues

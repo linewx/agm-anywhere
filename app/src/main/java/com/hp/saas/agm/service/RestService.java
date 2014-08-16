@@ -31,6 +31,7 @@ import com.hp.saas.agm.core.model.ServerStrategy;
 /*
 import javax.swing.event.HyperlinkEvent;*/
 import java.io.InputStream;
+import java.util.Map;
 
 public class RestService{
 
@@ -47,6 +48,18 @@ public class RestService{
     public static RestService getInstance() {
         return restService;
     }
+
+    public void logout() {
+        /*ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+            public void run() {
+                client.logout();
+            }
+        });*/
+        restClient.logout();
+
+    }
+
+
 
 
     /*private ServerType serverType = ServerType.NONE;
@@ -143,6 +156,10 @@ public class RestService{
 
     public int post(String xml, MyResultInfo result, String template, Object... params) {
         return post(new MyInputData(xml), result, template, params);
+    }
+
+    public int post(String xml, Map<String, String> header, MyResultInfo result, String template, Object... params) {
+        return post(new MyInputData(xml, header), result, template, params);
     }
 
     public int delete(MyResultInfo result, String template, Object... params) {

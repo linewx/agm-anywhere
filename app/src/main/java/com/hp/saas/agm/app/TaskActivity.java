@@ -1,12 +1,19 @@
 package com.hp.saas.agm.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import com.hp.saas.agm.core.entity.EntityQuery;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.core.model.Entity;
@@ -41,6 +48,39 @@ public class TaskActivity extends Activity implements OnClickListener {
         init();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.task_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.id.action_new:
+                newTask();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void newTask() {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("releaseBacklogItem", releaseBacklogItem);
+        bundle.putSerializable("story", story);
+        Intent intent = new Intent(mContext, NewTaskActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+        finish();
+    }
+
+
     private void findView() {
         lvTasks = (CustomListView) findViewById(R.id.lv_tasks);
         lvLoading = (LoadingView) findViewById(R.id.loading);
@@ -52,8 +92,8 @@ public class TaskActivity extends Activity implements OnClickListener {
         Bundle data = intent.getExtras();
 
         //get release&story information
-        releaseBacklogItem = (Entity)data.getSerializable("releaseBacklogItem");
-        story = (Entity)data.getSerializable("story");
+        releaseBacklogItem = (Entity) data.getSerializable("releaseBacklogItem");
+        story = (Entity) data.getSerializable("story");
 
         //lvTasks.setAdapter(new TaskAdapter(this, taskList));
         adapter = new TaskAdapter(this, taskList);
@@ -63,6 +103,31 @@ public class TaskActivity extends Activity implements OnClickListener {
             @Override
             public void onRefresh() {
                 new AsyncRefresh().execute(0);
+            }
+        });
+
+        lvTasks.setOnItemLongClickListener(new CustomListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setMessage("are you sure to delete this item?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int dialogId) {
+                                Entity task = (Entity) parent.getAdapter().getItem(position);
+                                ApplicationManager.getEntityService().deleteEntity(task);
+                                new AsyncRefresh().execute(0);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int dialogId) {
+                                dialog.dismiss();
+                                // User cancelled the dialog
+                            }
+                        });
+                // Create the AlertDialog object and return it
+                builder.create().show();
+                return true;
             }
         });
 
@@ -93,22 +158,22 @@ public class TaskActivity extends Activity implements OnClickListener {
         query.addColumn("description", 1);
         query.addColumn("estimated", 1);
         query.addColumn("invested", 1);
-        query.addColumn("remaining",1);
+        query.addColumn("remaining", 1);
         query.addColumn("assigned-to", 1);
         query.addColumn("release-backlog-item-id", 1);
         query.setValue("release-backlog-item-id", String.valueOf(releaseBacklogItem.getPropertyValue("id")));
         EntityList list = EntityList.empty();
         try {
             list = ApplicationManager.getEntityService().query(query);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
 
         }
 
         if (list.size() > 0) {
             return list;
-        }else {
+        } else {
             return null;
         }
     }
@@ -122,19 +187,22 @@ public class TaskActivity extends Activity implements OnClickListener {
 
         @Override
         protected Integer doInBackground(Integer... params) {
-            int result = -1;
+            int result = 1;
             recentReleaseBacklog = getProjectTask();
-            if (recentReleaseBacklog.size() > 0) {
+            return result;
+            /*if (recentReleaseBacklog.size() > 0) {
                 result = 1;
             }
-            return result;
+            return result;*/
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
+            if (recentReleaseBacklog != null) {
+                taskList.addAll(recentReleaseBacklog);
+            }
 
-            taskList.addAll(recentReleaseBacklog);
             adapter.notifyDataSetChanged();
             //((BaseAdapter)lvTasks.getAdapter()).notifyDataSetChanged();
 
@@ -160,13 +228,15 @@ public class TaskActivity extends Activity implements OnClickListener {
         @Override
         protected void onPostExecute(List<Entity> result) {
             super.onPostExecute(result);
+            taskList.clear();
             if (result != null) {
                 for (Entity rc : recentTasks) {
                     taskList.add(0, rc);
                 }
-                //adapter.notifyDataSetChanged();
-                lvTasks.onRefreshComplete();
+
             }
+            adapter.notifyDataSetChanged();
+            lvTasks.onRefreshComplete();
         }
 
         @Override
@@ -175,7 +245,6 @@ public class TaskActivity extends Activity implements OnClickListener {
         }
 
     }
-
 
 
 }

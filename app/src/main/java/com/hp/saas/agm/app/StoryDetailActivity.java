@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
@@ -44,8 +46,18 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private LinearLayout llStoryDetail;
     private LoadingView lvLoading;
     private Entity releaseBacklogItem;
+    private Entity originReleaseBacklogItem;
     private Entity story;
     private ActionBar actionBar;
+
+    private TextView lblRelease;
+    private TextView lblSprint;
+    private TextView lblStatus;
+    private TextView lblPoint;
+    private TextView lblOwner;
+    private TextView lblTask;
+    private TextView lblComments;
+
 
     private RelativeLayout rlRelease;
     private RelativeLayout rlSprint;
@@ -54,6 +66,8 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private RelativeLayout rlOwner;
     private RelativeLayout rlTask;
     private LinearLayout llDummyFocus;
+
+    private Button btnSave;
 
     private Set<String> changedField = new HashSet<String>();
 
@@ -72,13 +86,13 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.story_menu, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
 
     private void findView() {
         llStoryDetail = (LinearLayout) findViewById(R.id.ll_story_detail);
@@ -100,12 +114,23 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         rlTask = (RelativeLayout) findViewById(R.id.rl_story_task);
 
         llDummyFocus = (LinearLayout) findViewById(R.id.dummy_focus);
+
+        lblRelease = (TextView) findViewById(R.id.label_story_release);
+        lblSprint = (TextView) findViewById(R.id.label_story_sprint);
+        lblStatus = (TextView) findViewById(R.id.label_story_status);
+        lblPoint = (TextView) findViewById(R.id.label_story_point);
+        lblOwner = (TextView) findViewById(R.id.label_story_owner);
+        lblTask = (TextView) findViewById(R.id.label_story_task);
+        //lblComments = (TextView) findViewById(R.id.label_story_comments);
+
+        btnSave = (Button) findViewById(R.id.btn_story_save);
     }
 
     private void init() {
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         releaseBacklogItem = (Entity) data.getSerializable("release");
+        originReleaseBacklogItem = releaseBacklogItem.clone();
 
         tvPoint.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -121,6 +146,29 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             }
 
         });
+
+        tvPoint.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                String entityProperty = "story-points";
+                String entityValue = s.toString();
+
+                boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
+                updateEntity(changed, entityProperty, entityValue);
+                updateLabel(changed, lblPoint);
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){
+
+            }
+        });
 /*        tvTask.setOnClickListener(taskClickListener);
         tvStatus.setOnClickListener(statusClickListener);*/
 
@@ -132,6 +180,26 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         rlTask.setOnClickListener(storyClickListener);
 
         new NewsAsyncTask(lvLoading).execute(0);
+    }
+
+    private boolean envaluateChange(Entity entity, String property, String value) {
+        if (entity.getPropertyValue(property).equals(value)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    private void enableButton() {
+        btnSave.setEnabled(true);
+        btnSave.setBackgroundColor(mContext.getResources().getColor(R.color.green));
+
+    }
+
+    private void disableButton() {
+        btnSave.setEnabled(false);
+        btnSave.setBackgroundColor(mContext.getResources().getColor(R.color.gray));
     }
 
     @Override
@@ -185,9 +253,14 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
                 public void valueChanged(Object newValue, Object oldValue) {
-                    changedField.add("status");
-                    releaseBacklogItem.setProperty("status", newValue);
-                    tvStatus.setText((String) newValue);
+                    String entityProperty = "status";
+                    String entityValue = (String) newValue;
+                    String ViewValue = entityValue;
+
+                    boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
+                    updateEntity(changed, entityProperty, entityValue);
+                    updateLabel(changed, lblStatus);
+                    tvStatus.setText(entityValue);
                 }
             });
             popupWindow.show();
@@ -207,8 +280,18 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
                 public void valueChanged(Object newValue, Object oldValue) {
-                    releaseBacklogItem.setProperty("target-rcyc", ((Entity) newValue).getPropertyValue("id"));
-                    tvSprint.setText((String) ((Entity) newValue).getPropertyValue("name"));
+                    //updateEntity("target-rcyc", (String)newValue, lblOwner, tvOwner);
+/*                    releaseBacklogItem.setProperty("target-rcyc", ((Entity) newValue).getPropertyValue("id"));
+                    tvSprint.setText((String) ((Entity) newValue).getPropertyValue("name"));*/
+
+                    String entityProperty = "target-rcyc";
+                    String entityValue = ((Entity) newValue).getPropertyValue("id");
+                    String viewValue = ((Entity) newValue).getPropertyValue("name");
+
+                    boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
+                    updateEntity(changed, entityProperty, entityValue);
+                    updateLabel(changed, lblSprint);
+                    tvSprint.setText(viewValue);
                 }
             });
             popupWindow.show();
@@ -220,18 +303,66 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
     }
 
+    private void updateEntity(boolean changed, String property, String value) {
+        if (changed) {
+            changedField.add(property);
+            releaseBacklogItem.setProperty(property, value);
+        }
+        else {
+            changedField.remove(property);
+            releaseBacklogItem.setProperty(property, value);
+        }
+
+        if (changedField.size() == 0) {
+            disableButton();
+        }else {
+            enableButton();
+        }
+
+        //valueView.setText(value);
+    }
+
+    private void updateLabel(boolean changed, TextView labelView) {
+        //boolean changed = envaluateChange(originReleaseBacklogItem, property, value);
+        if (changed) {
+            //highlight label
+            String label = labelView.getText().toString();
+            if (!label.endsWith("*")) {
+                labelView.setText(label + "*");
+            }
+            labelView.setTextColor(mContext.getResources().getColor(R.color.green));
+        }
+        else {
+            String label = labelView.getText().toString();
+            if (label.endsWith("*")) {
+                labelView.setText(label.substring(0, label.length() - 1));
+            }
+            labelView.setTextColor(mContext.getResources().getColor(R.color.black)) ;
+        }
+
+    }
+
+
     private void clickOwner(View v) {
         try {
             ListPopupWindow popupWindow = new ListPopupWindow(mContext);
             popupWindow.setTitle("Owner");
             Entity team = ApplicationManager.getSprintService().getTeam();
             EntityList teamMembers = ApplicationManager.getTeamMemberService().getTeamMembers(team);
+            //EntityList teamMembers = ApplicationManager.getSprintService().gett
             popupWindow.setAdapter(new TeamAdapter(mContext, teamMembers, releaseBacklogItem.getPropertyValue("owner")));
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
                 public void valueChanged(Object newValue, Object oldValue) {
-                    releaseBacklogItem.setProperty("owner", ((Entity) newValue).getPropertyValue("name"));
-                    tvOwner.setText((String) ((Entity) newValue).getPropertyValue("name"));
+                    String entityProperty = "owner";
+                    String entityValue = ((Entity) newValue).getPropertyValue("name");
+                    String ViewValue = entityValue;
+
+                    boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
+                    updateEntity(changed, entityProperty, entityValue);
+                    updateLabel(changed, lblOwner);
+                    tvOwner.setText(entityValue);
+
                 }
             });
             popupWindow.show();

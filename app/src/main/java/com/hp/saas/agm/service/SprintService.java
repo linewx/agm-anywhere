@@ -468,6 +468,20 @@ public class SprintService {
         }
     }
 
+    public synchronized EntityList getTeamMembers() {
+        final Entity team = this.teamSelector.selected;
+        if (team != null) {
+            return getValues(teamMemberSelector, new Runnable() {
+                @Override
+                public void run() {
+                    loadTeamMembers(team);
+                }
+            });
+        } else {
+            return null;
+        }
+    }
+
     public EntityList getSprints() {
         final Entity release = this.releaseSelector.selected;
         if (release != null) {

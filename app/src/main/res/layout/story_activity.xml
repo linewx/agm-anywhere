@@ -3,7 +3,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/whites">
+    <Button
+            android:id="@+id/btn_story_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textSize="18sp"
+            android:textColor="@color/whites"
+            android:text="Save"
+            android:layout_margin="10dp"
+            android:background="@color/gray"
+            android:alpha="20"
+            />
+
     <com.hp.saas.agm.app.view.CustomerScrollView
+            android:id="@+id/lv_story"
+            android:layout_above="@+id/btn_story_save"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
         <LinearLayout android:layout_width="match_parent"
@@ -47,7 +62,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_release"
+                        android:id="@+id/label_story_release"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -74,6 +89,7 @@
                         android:layout_width="wrap_content"
                         android:layout_alignParentRight="true"
                         android:src="@drawable/gray_right_arrow"
+                        android:visibility="invisible"
                         android:textSize="18sp"/>
             </RelativeLayout>
 
@@ -85,7 +101,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_sprint"
+                        android:id="@+id/label_story_sprint"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -124,7 +140,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_status"
+                        android:id="@+id/label_story_status"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -163,7 +179,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_point"
+                        android:id="@+id/label_story_point"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -208,7 +224,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_owner"
+                        android:id="@+id/label_story_owner"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -254,7 +270,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_task"
+                        android:id="@+id/label_story_task"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -293,7 +309,7 @@
                     android:orientation="horizontal">
 
                 <TextView
-                        android:id="@+id/story_label_comments"
+                        android:id="@+id/label_story_comments"
                         android:padding="2dp"
                         android:gravity="center"
                         android:layout_height="wrap_content"
@@ -323,6 +339,8 @@
                         android:textSize="18sp"/>
 
             </RelativeLayout>
+
+
 
 
         </LinearLayout>

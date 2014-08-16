@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import com.hp.saas.agm.core.entity.EntityQuery;
 import com.hp.saas.agm.manager.ApplicationManager;
 import com.hp.saas.agm.core.model.parser.ProjectExtensionsList;
 import com.hp.saas.agm.rest.client.RestClient;
@@ -161,6 +162,7 @@ public class LoginActivity extends Activity {
     }
 
     public static ServerType getServerType(RestClient restClient) {
+        RestService.getForString(restClient, "defects?query={0}", EntityQuery.encode("{id[0]}"));
         InputStream is = restClient.getForStream("customization/extensions");
         return checkServerType(ProjectExtensionsList.create(is));
     }

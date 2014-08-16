@@ -204,8 +204,8 @@ public class AliRestClient implements RestClient {
         HttpParams connManagerParams = new BasicHttpParams();
         HttpProtocolParams.setVersion(connManagerParams, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setUseExpectContinue(connManagerParams, true);
-        HttpProtocolParams.setUserAgent(connManagerParams,"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
-                + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");
+        /*HttpProtocolParams.setUserAgent(connManagerParams,"Mozilla/5.0(Linux;U;Android 2.2.1;en-us;Nexus One Build.FRG83) "
+                + "AppleWebKit/553.1(KHTML,like Gecko) Version/4.0 Mobile Safari/533.1");*/
 
         ConnPerRoute cpr = new ConnPerRoute() {
             @Override
@@ -351,14 +351,14 @@ public class AliRestClient implements RestClient {
         }
 
         cookies = httpClient.getCookieStore().getCookies();
-        Cookie qcCookie = getSessionCookieByName(cookies, COOKIE_SESSION_NAME);
+        BasicClientCookie qcCookie = (BasicClientCookie)getSessionCookieByName(cookies, COOKIE_SESSION_NAME);
         sessionContext = new SessionContext(location, ssoCookie, qcCookie);
     }
 
     private HttpPost initHttpPost(String restEndPoint, String xml) {
         HttpPost post = new HttpPost(restEndPoint);
         post.setEntity(createRequestEntity(InputData.create(xml)));
-        post.addHeader("Content-type", "application/xml");
+        post.addHeader("Content-Type", "application/xml");
 
         return post;
     }

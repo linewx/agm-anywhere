@@ -34,7 +34,7 @@ public class IssueTicketFilter implements ResponseFilter {
 
     @Override
     public Filter applyFilter(Filter filter, HttpResponse method, ResultInfo resultInfo) {
-        Header contentType = method.getFirstHeader("Content-type");
+        Header contentType = method.getFirstHeader("Content-Type");
         if(method.getStatusLine().getStatusCode() == 500 && contentType != null && contentType.getValue().contains("text/html")) {
             return new MyFilter(filter, resultInfo);
         } else {

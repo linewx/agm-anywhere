@@ -5,6 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
@@ -38,6 +42,8 @@ public class MainActivity extends Activity implements OnClickListener {
     private Spinner spOwnerFilter;
     private Spinner spStatusFilter;
 
+    private boolean loaded = false;
+
     //testing
     ArrayList<String> arr_cars = new ArrayList<String>();
     String selected_car = "";
@@ -52,6 +58,42 @@ public class MainActivity extends Activity implements OnClickListener {
         findView();
         init();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                settings();
+                return true;
+            case R.id.action_logout:
+                logout();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void settings() {
+        Intent intent = new Intent(mContext, ReleaseConfigurationActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void logout() {
+        ApplicationManager.getRestService().logout();
+        Intent intent = new Intent(mContext, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
 
     private void findView() {
         lvReleaseBacklog = (CustomListView) findViewById(R.id.lv_release_backlog);
@@ -140,8 +182,9 @@ public class MainActivity extends Activity implements OnClickListener {
     public AdapterView.OnItemSelectedListener filterListener =new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-            lvReleaseBacklog.fireRefreshEvent();
-            // your code here
+            if (loaded) {
+                lvReleaseBacklog.fireRefreshEvent();
+            }
         }
 
         @Override
@@ -245,7 +288,7 @@ public class MainActivity extends Activity implements OnClickListener {
         if (list.size() > 0) {
             return list;
         } else {
-            return null;
+            return EntityList.empty();
         }
 
     }
@@ -295,28 +338,27 @@ public class MainActivity extends Activity implements OnClickListener {
 
         @Override
         protected Integer doInBackground(Integer... params) {
-            int result = -1;
+            int result = 1;
 
             //todo: try to avoid loadSprints every time
             recentReleaseBacklog = getStories(ApplicationManager.getSprintService().getSprint(), ApplicationManager.getSprintService().getTeam());
-            if (recentReleaseBacklog.size() > 0) {
-                result = 1;
-            }
             return result;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             super.onPostExecute(result);
-            releaseBacklog.addAll(recentReleaseBacklog);
+            if (recentReleaseBacklog != null) {
+                releaseBacklog.addAll(recentReleaseBacklog);
+            }
             adapter.notifyDataSetChanged();
+            loaded = true;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
         }
-
     }
 
     private class AsyncRefresh extends
