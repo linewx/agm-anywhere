@@ -237,7 +237,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         Intent intent = new Intent(mContext, TaskActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-        finish();
+        //finish();
     }
 
     private void clickStatus(View v) {

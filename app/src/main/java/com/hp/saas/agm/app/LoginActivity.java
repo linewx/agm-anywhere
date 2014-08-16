@@ -129,7 +129,7 @@ public class LoginActivity extends Activity {
 
                 Intent intent = new Intent(context, MainActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
 
             } catch (AuthenticationFailureException e) {
                 ApplicationManager.getMessageService().show("Authentication failed");

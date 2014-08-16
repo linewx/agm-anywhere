@@ -180,7 +180,7 @@ public class NewTaskActivity extends Activity implements OnClickListener {
         public void onClick(View v) {
             Intent intent = new Intent(mContext, NewTaskActivity.class);
             startActivity(intent);
-            finish();
+            //finish();
         }
     };
 

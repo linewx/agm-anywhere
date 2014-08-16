@@ -77,7 +77,7 @@ public class TaskActivity extends Activity implements OnClickListener {
         Intent intent = new Intent(mContext, NewTaskActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
-        finish();
+        //finish();
     }
 
 
@@ -147,7 +147,7 @@ public class TaskActivity extends Activity implements OnClickListener {
         public void onClick(View v) {
             Intent intent = new Intent(mContext, TaskActivity.class);
             startActivity(intent);
-            finish();
+            //finish();
         }
     };
 

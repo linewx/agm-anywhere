@@ -77,7 +77,7 @@ public class ReleaseConfigurationActivity extends Activity implements OnClickLis
 
                 Intent intent = new Intent(mContext, TeamConfigurationActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
 
                 return false;
                /* TextView a = (TextView)v.findViewById(R.id.item_name);

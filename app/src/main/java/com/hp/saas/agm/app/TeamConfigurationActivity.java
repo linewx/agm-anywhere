@@ -62,7 +62,7 @@ public class TeamConfigurationActivity extends Activity implements OnClickListen
                 ApplicationManager.getSprintService().selectTeam(entity);
                 Intent intent = new Intent(mContext, MainActivity.class);
                 startActivity(intent);
-                finish();
+                //finish();
             }
         });
 
