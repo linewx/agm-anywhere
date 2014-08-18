@@ -27,9 +27,7 @@ import java.util.List;
 
 public class TaskActivity extends Activity implements OnClickListener {
 
-    //private CustomListView lvReleaseBacklog;
-    //private LoadingView lvLoading;
-    //private EntityList releaseBacklog = EntityList.empty();
+
     private Context mContext;
     private CustomListView lvTasks;
     private LoadingView lvLoading;
@@ -37,6 +35,9 @@ public class TaskActivity extends Activity implements OnClickListener {
     private Entity story;
     private EntityList taskList = EntityList.empty();
     private TaskAdapter adapter;
+
+    private final static int NEW_TASK_REQUEST = 1;
+    private final static int TASK_DETAIL_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,8 @@ public class TaskActivity extends Activity implements OnClickListener {
         bundle.putSerializable("story", story);
         Intent intent = new Intent(mContext, NewTaskActivity.class);
         intent.putExtras(bundle);
-        startActivity(intent);
+        //startActivity(intent);
+        startActivityForResult(intent, NEW_TASK_REQUEST);
         //finish();
     }
 
@@ -114,7 +116,7 @@ public class TaskActivity extends Activity implements OnClickListener {
                 data.putSerializable("task", entity);
                 Intent intent = new Intent(mContext, TaskDetailActivity.class);
                 intent.putExtras(data);
-                startActivity(intent);
+                startActivityForResult(intent, TASK_DETAIL_REQUEST);
             }
         });
 
@@ -153,13 +155,23 @@ public class TaskActivity extends Activity implements OnClickListener {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        new AsyncRefresh().execute(0);
+/*        if (requestCode == NEW_TASK_REQUEST) {
+
+            if (resultCode == RESULT_OK) {
+
+            }
+        }*/
+    }
+
     private OnClickListener taskClickListener = new OnClickListener() {
 
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(mContext, TaskActivity.class);
             startActivity(intent);
-            //finish();
         }
     };
 

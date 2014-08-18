@@ -23,15 +23,38 @@
                     android:textStyle="bold"
                     android:textSize="18sp"/>
 
-            <EditText
-                    android:id="@+id/et_new_task_description"
+            <LinearLayout
+                    android:id="@+id/ll_new_task_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:minLines="1"
-                    android:hint="Description"
-                    android:background="@drawable/login_et_bg"
-                    android:textSize="16sp"/>
+                    android:orientation="vertical">
+
+                <TextView
+                        android:id="@+id/tv_new_task_description_label"
+                        android:padding="2dp"
+                        android:gravity="center"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:text="@string/new_task_description"
+                        android:textStyle="bold"
+                        android:textSize="18sp"/>
+
+                <EditText
+                        android:id="@+id/et_new_task_description"
+                        android:padding="2dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_toRightOf="@+id/tv_task_detail_description_label"
+                        android:hint="please input description here"
+                        android:background="@drawable/login_et_bg"
+                        android:textSize="18sp"/>
+
+
+
+            </LinearLayout>
+
+
 
 
             <!--<RelativeLayout
@@ -121,7 +144,17 @@
 
             </RelativeLayout>
 
-            <LinearLayout
+            <Button
+                    android:id="@+id/btn_new_task_save"
+                    android:layout_margin="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/green"
+                    android:text="Save"
+                    android:textColor="@color/whites"
+                    />
+
+            <!--<LinearLayout
                     android:layout_marginTop="50dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
@@ -145,7 +178,7 @@
                         android:textColor="@color/whites"
                         android:layout_weight="1"
                         />
-            </LinearLayout>
+            </LinearLayout>-->
 
 
         </LinearLayout>

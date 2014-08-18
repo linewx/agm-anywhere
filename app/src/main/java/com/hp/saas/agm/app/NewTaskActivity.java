@@ -29,6 +29,7 @@ public class NewTaskActivity extends Activity implements OnClickListener {
     private RelativeLayout rlNewTaskEstimated;
     private RelativeLayout rlNewTaskAssginee;
     private LinearLayout llNewTask;
+    private LinearLayout llNewTaskDescription;
     private Entity releaseBacklogItem;
     private LinearLayout llDummyFocus;
     private Entity story;
@@ -50,15 +51,16 @@ public class NewTaskActivity extends Activity implements OnClickListener {
     private void findView() {
         lvLoading = (LoadingView) findViewById(R.id.loading);
         btnSave = (Button) findViewById(R.id.btn_new_task_save);
-        btnCancel = (Button) findViewById(R.id.btn_new_task_cancel);
         etDescription = (EditText) findViewById(R.id.et_new_task_description);
         etEstimated = (EditText) findViewById(R.id.et_new_task_estimated);
         tvBacklogName = (TextView) findViewById(R.id.tv_new_task_backlog_name);
         tvAssginee = (TextView) findViewById(R.id.tv_new_task_assignee);
         rlNewTaskAssginee = (RelativeLayout) findViewById(R.id.rl_new_task_assignee);
         rlNewTaskEstimated = (RelativeLayout) findViewById(R.id.rl_new_task_estimated);
+        llNewTaskDescription = (LinearLayout) findViewById(R.id.ll_new_task_description);
         llNewTask = (LinearLayout) findViewById(R.id.ll_new_task);
         llDummyFocus = (LinearLayout) findViewById(R.id.dummy_focus);
+
     }
 
     private void init() {
@@ -78,6 +80,7 @@ public class NewTaskActivity extends Activity implements OnClickListener {
         llDummyFocus.requestFocus();
         rlNewTaskEstimated.setOnClickListener(newTaskClickListener);
         rlNewTaskAssginee.setOnClickListener(newTaskClickListener);
+        llNewTaskDescription.setOnClickListener(newTaskClickListener);
 
         etEstimated.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -120,9 +123,14 @@ public class NewTaskActivity extends Activity implements OnClickListener {
             @Override
             public void onClick(View v) {
                 llDummyFocus.requestFocus();
-                ApplicationManager.getEntityService().createEntity(task, true);
-                /*Entity team = ApplicationManager.getSprintService().getTeam();
-                team.getPropertyValue("name");*/
+                if( ApplicationManager.getEntityService().createEntity(task, true) == null) {
+                    ApplicationManager.getMessageService().show("save failed!");
+                }else {
+                    ApplicationManager.getMessageService().show("save successfully.");
+                    finish();
+                }
+
+
             }
         });
     }
@@ -133,7 +141,9 @@ public class NewTaskActivity extends Activity implements OnClickListener {
         public void onClick(View v) {
 
             llDummyFocus.requestFocus();
-            if (v.getId() == R.id.rl_new_task_assignee) {
+            if (v.getId() == R.id.ll_new_task_description) {
+                etDescription.requestFocus();
+            }else if (v.getId() == R.id.rl_new_task_assignee) {
                 clickAssignee(v);
             } else if (v.getId() == R.id.rl_new_task_estimated) {
                 etEstimated.requestFocus();
@@ -211,38 +221,7 @@ public class NewTaskActivity extends Activity implements OnClickListener {
         }
     }
 
-    /*private class NewsAsyncTask extends AsyncTaskBase {
-        EntityList recentReleaseBacklog = null;
 
-        public NewsAsyncTask(LoadingView loadingView) {
-            super(loadingView);
-        }
-
-        @Override
-        protected Integer doInBackground(Integer... params) {
-            int result = -1;
-            recentReleaseBacklog = getProjectTask();
-            if (recentReleaseBacklog.size() > 0) {
-                result = 1;
-            }
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            super.onPostExecute(result);
-
-            //((BaseAdapter)lvTasks.getAdapter()).notifyDataSetChanged();
-
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            llNewTask.setVisibility(View.INVISIBLE);
-        }
-
-    }*/
 
 
 

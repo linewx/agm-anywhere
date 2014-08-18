@@ -4,7 +4,6 @@ import android.app.*;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -40,7 +39,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private TextView tvStatus;
     private EditText tvPoint;
     private TextView tvName;
-    private TextView tvDescription;
+    private EditText etDescription;
     private TextView tvOwner;
     private TextView tvTask;
     private LinearLayout llStoryDetail;
@@ -51,15 +50,20 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private Entity originStory;
     private ActionBar actionBar;
 
-    private TextView lblRelease;
-    private TextView lblSprint;
-    private TextView lblStatus;
-    private TextView lblPoint;
-    private TextView lblOwner;
-    private TextView lblTask;
-    private TextView lblComments;
+
+    //label view
+    private TextView tvDescriptionLabel;
+    private TextView tvReleaseLabel;
+    private TextView tvSprintLabel;
+    private TextView tvStatusLabel;
+    private TextView tvPointLabel;
+    private TextView tvOwnerLabel;
+    private TextView tvTaskLabel;
+    private TextView tvCommentLabel;
 
 
+    //layout
+    private LinearLayout llDescription;
     private RelativeLayout rlRelease;
     private RelativeLayout rlSprint;
     private RelativeLayout rlStatus;
@@ -104,10 +108,11 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         tvPoint = (EditText) findViewById(R.id.story_point);
         tvName = (TextView) findViewById(R.id.story_name);
         tvOwner = (TextView) findViewById(R.id.story_owner);
-        tvDescription = (TextView) findViewById(R.id.story_description);
+        etDescription = (EditText) findViewById(R.id.et_story_description);
         tvTask = (TextView) findViewById(R.id.story_task);
         lvLoading = (LoadingView) findViewById(R.id.loading);
 
+        llDescription = (LinearLayout) findViewById(R.id.ll_story_description);
         rlRelease = (RelativeLayout) findViewById(R.id.rl_story_release);
         rlSprint = (RelativeLayout) findViewById(R.id.rl_story_sprint);
         rlStatus = (RelativeLayout) findViewById(R.id.rl_story_status);
@@ -117,13 +122,13 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
         llDummyFocus = (LinearLayout) findViewById(R.id.dummy_focus);
 
-        lblRelease = (TextView) findViewById(R.id.label_story_release);
-        lblSprint = (TextView) findViewById(R.id.label_story_sprint);
-        lblStatus = (TextView) findViewById(R.id.label_story_status);
-        lblPoint = (TextView) findViewById(R.id.label_story_point);
-        lblOwner = (TextView) findViewById(R.id.label_story_owner);
-        lblTask = (TextView) findViewById(R.id.label_story_task);
-        //lblComments = (TextView) findViewById(R.id.label_story_comments);
+        tvDescriptionLabel = (TextView) findViewById(R.id.tv_story_description_label);
+        tvReleaseLabel = (TextView) findViewById(R.id.label_story_release);
+        tvSprintLabel = (TextView) findViewById(R.id.label_story_sprint);
+        tvStatusLabel = (TextView) findViewById(R.id.label_story_status);
+        tvPointLabel = (TextView) findViewById(R.id.label_story_point);
+        tvOwnerLabel = (TextView) findViewById(R.id.label_story_owner);
+        tvTaskLabel = (TextView) findViewById(R.id.label_story_task);
 
         btnSave = (Button) findViewById(R.id.btn_story_save);
     }
@@ -157,23 +162,61 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
                 boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
                 updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
-                updateLabel(changed, lblPoint);
+                updateLabel(changed, tvPointLabel);
 
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count){
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
         });
-/*        tvTask.setOnClickListener(taskClickListener);
-        tvStatus.setOnClickListener(statusClickListener);*/
 
+        etDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                String entityProperty = "description";
+                String entityValue = s.toString();
+
+                boolean changed = envaluateChangeWithHtml(originStory, entityProperty, entityValue);
+                updateEntity(story, entityProperty, entityValue, storyChangedField, changed);
+                updateLabel(changed, tvDescriptionLabel);
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        });
+
+        etDescription.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    etDescription.setSelection(etDescription.getText().length());
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                } else {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+
+        });
+
+
+        llDescription.setOnClickListener(storyClickListener);
         rlRelease.setOnClickListener(storyClickListener);
         rlSprint.setOnClickListener(storyClickListener);
         rlStatus.setOnClickListener(storyClickListener);
@@ -181,14 +224,36 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         rlOwner.setOnClickListener(storyClickListener);
         rlTask.setOnClickListener(storyClickListener);
 
+        btnSave.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean result = save();
+                if (result) {
+                    reset();
+
+                    ApplicationManager.getMessageService().show("save successfully");
+                } else {
+                    ApplicationManager.getMessageService().show("save failed, please try again.");
+                }
+            }
+        });
+
+        llDummyFocus.requestFocus();
         new NewsAsyncTask(lvLoading).execute(0);
     }
 
     private boolean envaluateChange(Entity entity, String property, String value) {
         if (entity.getPropertyValue(property).equals(value)) {
             return false;
+        } else {
+            return true;
         }
-        else {
+    }
+
+    private boolean envaluateChangeWithHtml(Entity entity, String property, String value) {
+        if ( Html.fromHtml(entity.getPropertyValue(property)).toString().equals(value) ) {
+            return false;
+        } else {
             return true;
         }
     }
@@ -215,7 +280,9 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         public void onClick(View v) {
 
             llDummyFocus.requestFocus();
-            if (v.getId() == R.id.rl_story_task) {
+            if (v.getId() == R.id.ll_story_description) {
+                etDescription.requestFocus();
+            }else if (v.getId() == R.id.rl_story_task) {
                 clickTask(v);
             } else if (v.getId() == R.id.rl_story_status) {
                 clickStatus(v);
@@ -261,7 +328,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
                     boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
                     updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
-                    updateLabel(changed, lblStatus);
+                    updateLabel(changed, tvStatusLabel);
                     tvStatus.setText(entityValue);
                 }
             });
@@ -282,17 +349,13 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
                 public void valueChanged(Object newValue, Object oldValue) {
-                    //updateEntity("target-rcyc", (String)newValue, lblOwner, tvOwner);
-/*                    releaseBacklogItem.setProperty("target-rcyc", ((Entity) newValue).getPropertyValue("id"));
-                    tvSprint.setText((String) ((Entity) newValue).getPropertyValue("name"));*/
-
                     String entityProperty = "target-rcyc";
                     String entityValue = ((Entity) newValue).getPropertyValue("id");
                     String viewValue = ((Entity) newValue).getPropertyValue("name");
 
                     boolean changed = envaluateChange(originStory, entityProperty, entityValue);
                     updateEntity(story, entityProperty, entityValue, storyChangedField, changed);
-                    updateLabel(changed, lblSprint);
+                    updateLabel(changed, tvSprintLabel);
                     tvSprint.setText(viewValue);
                 }
             });
@@ -309,8 +372,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         if (changed) {
             changedField.add(property);
             entity.setProperty(property, value);
-        }
-        else {
+        } else {
             changedField.remove(property);
             entity.setProperty(property, value);
         }
@@ -323,13 +385,12 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private void checkButtonStatus() {
         if (backlogChangedField.size() == 0 && storyChangedField.size() == 0) {
             disableButton();
-        }else {
+        } else {
             enableButton();
         }
     }
 
     private void updateLabel(boolean changed, TextView labelView) {
-        //boolean changed = envaluateChange(originReleaseBacklogItem, property, value);
         if (changed) {
             //highlight label
             String label = labelView.getText().toString();
@@ -337,15 +398,26 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
                 labelView.setText(label + "*");
             }
             labelView.setTextColor(mContext.getResources().getColor(R.color.green));
-        }
-        else {
+        } else {
             String label = labelView.getText().toString();
             if (label.endsWith("*")) {
                 labelView.setText(label.substring(0, label.length() - 1));
             }
-            labelView.setTextColor(mContext.getResources().getColor(R.color.black)) ;
+            labelView.setTextColor(mContext.getResources().getColor(R.color.black));
         }
+    }
 
+    private void restoreAllLabel() {
+        updateLabel(false, tvSprintLabel);
+        updateLabel(false, tvStatusLabel);
+        updateLabel(false, tvPointLabel);
+        updateLabel(false, tvOwnerLabel);
+        updateLabel(false, etDescription);
+    }
+
+    public void restoreOriginEntity() {
+        originReleaseBacklogItem = releaseBacklogItem.clone();
+        originStory = story.clone();
     }
 
 
@@ -354,7 +426,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             ListPopupWindow popupWindow = new ListPopupWindow(mContext);
             popupWindow.setTitle("Owner");
             Entity team = ApplicationManager.getSprintService().getTeam();
-            EntityList teamMembers = ApplicationManager.getTeamMemberService().getTeamMembers(team);
+            EntityList teamMembers = ApplicationManager.getSprintService().getTeamMembers();
             popupWindow.setAdapter(new TeamAdapter(mContext, teamMembers, releaseBacklogItem.getPropertyValue("owner")));
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
@@ -365,7 +437,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
                     boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
                     updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
-                    updateLabel(changed, lblOwner);
+                    updateLabel(changed, tvOwnerLabel);
                     tvOwner.setText(entityValue);
 
                 }
@@ -472,7 +544,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             tvName.setText(story.getPropertyValue("name"));
             tvPoint.setText(releaseBacklogItem.getPropertyValue("story-points"));
             tvOwner.setText(releaseBacklogItem.getPropertyValue("owner"));
-            tvDescription.setText(Html.fromHtml(story.getPropertyValue("description")));
+            etDescription.setText(Html.fromHtml(story.getPropertyValue("description")));
 
 
             super.onPostExecute(result);
@@ -487,34 +559,6 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
     }
 
-    /*private class AsyncRefresh extends
-            AsyncTask<Integer, Integer, List<Entity>> {
-        private List<Entity> recentStories = new ArrayList<Entity>();
-
-        @Override
-        protected List<Entity> doInBackground(Integer... params) {
-            recentStories = ApplicationManager.getSprintService().getStories();
-            return recentStories;
-        }
-
-        @Override
-        protected void onPostExecute(List<Entity> result) {
-            super.onPostExecute(result);
-            if (result != null) {
-                for (Entity rc : recentStories) {
-                    releaseBacklog.add(0, rc);
-                }
-                //adapter.notifyDataSetChanged();
-                lvReleaseBacklog.onRefreshComplete();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-    }*/
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -536,7 +580,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
             case R.id.action_save:
                 save();
@@ -545,22 +589,35 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         return super.onOptionsItemSelected(item);
     }
 
-    public void save() {
-        Entity result = null;
+    public boolean save() {
         try {
-            if(backlogChangedField.size() != 0) {
-                result = ApplicationManager.getEntityService().updateEntity(releaseBacklogItem, backlogChangedField, false, false, false);
+            if (backlogChangedField.size() != 0) {
+                ApplicationManager.getEntityService().updateEntity(releaseBacklogItem, backlogChangedField, false, false, false);
             }
 
-            if(storyChangedField.size() != 0) {
-                result = ApplicationManager.getEntityService().updateEntity(story, storyChangedField, false, false, false);
+            if (storyChangedField.size() != 0) {
+                ApplicationManager.getEntityService().updateEntity(story, storyChangedField, false, false, false);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
+        return true;
 
+
+    }
+
+    public void reset() {
+        //reset button status
+        disableButton();
+
+        //reset label
+        restoreAllLabel();
+
+        //reset origin entity
+        restoreOriginEntity();
     }
 
 }
