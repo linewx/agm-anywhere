@@ -48,6 +48,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
     private Entity releaseBacklogItem;
     private Entity originReleaseBacklogItem;
     private Entity story;
+    private Entity originStory;
     private ActionBar actionBar;
 
     private TextView lblRelease;
@@ -69,7 +70,8 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
     private Button btnSave;
 
-    private Set<String> changedField = new HashSet<String>();
+    private Set<String> backlogChangedField = new HashSet<String>();
+    private Set<String> storyChangedField = new HashSet<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +156,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
                 String entityValue = s.toString();
 
                 boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
-                updateEntity(changed, entityProperty, entityValue);
+                updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
                 updateLabel(changed, lblPoint);
 
             }
@@ -258,7 +260,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
                     String ViewValue = entityValue;
 
                     boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
-                    updateEntity(changed, entityProperty, entityValue);
+                    updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
                     updateLabel(changed, lblStatus);
                     tvStatus.setText(entityValue);
                 }
@@ -288,8 +290,8 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
                     String entityValue = ((Entity) newValue).getPropertyValue("id");
                     String viewValue = ((Entity) newValue).getPropertyValue("name");
 
-                    boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
-                    updateEntity(changed, entityProperty, entityValue);
+                    boolean changed = envaluateChange(originStory, entityProperty, entityValue);
+                    updateEntity(story, entityProperty, entityValue, storyChangedField, changed);
                     updateLabel(changed, lblSprint);
                     tvSprint.setText(viewValue);
                 }
@@ -303,23 +305,27 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
 
     }
 
-    private void updateEntity(boolean changed, String property, String value) {
+    private void updateEntity(Entity entity, String property, String value, Set<String> changedField, boolean changed) {
         if (changed) {
             changedField.add(property);
-            releaseBacklogItem.setProperty(property, value);
+            entity.setProperty(property, value);
         }
         else {
             changedField.remove(property);
-            releaseBacklogItem.setProperty(property, value);
+            entity.setProperty(property, value);
         }
 
-        if (changedField.size() == 0) {
+        checkButtonStatus();
+
+        //valueView.setText(value);
+    }
+
+    private void checkButtonStatus() {
+        if (backlogChangedField.size() == 0 && storyChangedField.size() == 0) {
             disableButton();
         }else {
             enableButton();
         }
-
-        //valueView.setText(value);
     }
 
     private void updateLabel(boolean changed, TextView labelView) {
@@ -349,7 +355,6 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
             popupWindow.setTitle("Owner");
             Entity team = ApplicationManager.getSprintService().getTeam();
             EntityList teamMembers = ApplicationManager.getTeamMemberService().getTeamMembers(team);
-            //EntityList teamMembers = ApplicationManager.getSprintService().gett
             popupWindow.setAdapter(new TeamAdapter(mContext, teamMembers, releaseBacklogItem.getPropertyValue("owner")));
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override
@@ -359,7 +364,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
                     String ViewValue = entityValue;
 
                     boolean changed = envaluateChange(originReleaseBacklogItem, entityProperty, entityValue);
-                    updateEntity(changed, entityProperty, entityValue);
+                    updateEntity(releaseBacklogItem, entityProperty, entityValue, backlogChangedField, changed);
                     updateLabel(changed, lblOwner);
                     tvOwner.setText(entityValue);
 
@@ -452,6 +457,7 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         protected void onPostExecute(Integer result) {
             llStoryDetail.setVisibility(View.VISIBLE);
             story = recentStory;
+            originStory = story.clone();
 
             //set releases
             String releaseId = story.getPropertyValue("target-rel");
@@ -539,16 +545,21 @@ public class StoryDetailActivity extends Activity implements ActionBar.TabListen
         return super.onOptionsItemSelected(item);
     }
 
-    public Entity save() {
+    public void save() {
         Entity result = null;
         try {
+            if(backlogChangedField.size() != 0) {
+                result = ApplicationManager.getEntityService().updateEntity(releaseBacklogItem, backlogChangedField, false, false, false);
+            }
 
-            result = ApplicationManager.getEntityService().updateEntity(releaseBacklogItem, changedField, false, false, false);
+            if(storyChangedField.size() != 0) {
+                result = ApplicationManager.getEntityService().updateEntity(story, storyChangedField, false, false, false);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return result;
 
     }
 

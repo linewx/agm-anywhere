@@ -40,6 +40,10 @@
                 android:label="Task">
         </activity>
         <activity
+                android:name="com.hp.saas.agm.app.TaskDetailActivity"
+                android:label="Task">
+        </activity>
+        <activity
                 android:name="com.hp.saas.agm.app.NewTaskActivity"
                 android:label="New Task">
         </activity>

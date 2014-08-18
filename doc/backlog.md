@@ -1,40 +1,20 @@
 feature
 ================
-*  while network is weak, too much time to wait without any information
-*  wizard to initialize release and team
-* release and team cache
-* add task
-* remove task
-* edit task
-* avatar
-* remove story
-* navigate back task -> story detail -> story list
-* can show all story
-* can navigate other sprint
-* only show my story list
+* __(testing__)add task
+* __(testing__)remove task
+* __(in progress__)edit task
 * drawer menu
-            1. log out
-            2. settings
+            1. __(in progress)__log out
+            2. __(testing)__settings
 
-* settings activity
-* switch to strict mode
-* refactor init progress(load release, team, sprint)
-* persistent story data
-* general solution
-    -- how
-    -- remove uneeded resource
-    --
 
 * project/domain/url
 * test with other user
 
-* commit to github -- done
-* autodetect release and team
-* get teammembers sync
+* __(in progress)__get teammembers sync
 * update story
 * update task
-* swtich back between activities
-
+* refresh story list after edit story
 
 Issues
 =================
@@ -51,5 +31,13 @@ Issues
 Enhancement
 ===========
 * while selecting owner, use full name instead of email address
+
+Next Release
+=============
+* remove story
+* while network is weak, too much time to wait without any information
+* avatar
+* switch to strict mode
+* persistent story data
 
 

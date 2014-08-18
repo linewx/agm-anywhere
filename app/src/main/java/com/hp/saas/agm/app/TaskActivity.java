@@ -106,6 +106,18 @@ public class TaskActivity extends Activity implements OnClickListener {
             }
         });
 
+        lvTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Entity entity = (Entity) parent.getAdapter().getItem(position);
+                Bundle data = new Bundle();
+                data.putSerializable("task", entity);
+                Intent intent = new Intent(mContext, TaskDetailActivity.class);
+                intent.putExtras(data);
+                startActivity(intent);
+            }
+        });
+
         lvTasks.setOnItemLongClickListener(new CustomListView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(final AdapterView<?> parent, View view, final int position, long id) {
