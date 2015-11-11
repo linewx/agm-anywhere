@@ -70,9 +70,7 @@ public class TaskAdapter extends BaseAdapter{
             holder.tvStatus.setBackgroundColor(context.getResources().getColor(R.color.New));
         }else if(status.equals("In Progress")) {
             holder.tvStatus.setBackgroundColor(context.getResources().getColor(R.color.InProgress));
-        }else if(status.equals("In Testing")) {
-            holder.tvStatus.setBackgroundColor(context.getResources().getColor(R.color.InTesting));
-        }else if(status.equals("Done")) {
+        }else if(status.equals("Completed")) {
             holder.tvStatus.setBackgroundColor(context.getResources().getColor(R.color.Done));
         }
         holder.tvStatus.setText(task.getPropertyValue("status"));

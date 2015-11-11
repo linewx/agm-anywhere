@@ -23,8 +23,6 @@
             android:label="login"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
 
-
-
         </activity>
         <activity
                 android:name="com.hp.saas.agm.app.MainActivity"

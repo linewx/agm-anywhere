@@ -228,7 +228,6 @@ public class TaskActivity extends Activity implements OnClickListener {
             }
 
             adapter.notifyDataSetChanged();
-            //((BaseAdapter)lvTasks.getAdapter()).notifyDataSetChanged();
 
         }
 

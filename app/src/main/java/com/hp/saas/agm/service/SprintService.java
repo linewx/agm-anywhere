@@ -310,8 +310,9 @@ public class SprintService {
         EntityQuery query = new EntityQuery("team");
         query.addColumn("id", 1);
         query.addColumn("name", 1);
-        query.setValue("release-id", release.getPropertyValue("id"));
-        query.setPropertyResolved("release-id", true);
+        query.setValue("release.id", release.getPropertyValue("id"));
+        query.setPropertyResolved("release.id", true);
+        query.addColumn("release-id", 1);
         query.addOrder("name", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
         try {

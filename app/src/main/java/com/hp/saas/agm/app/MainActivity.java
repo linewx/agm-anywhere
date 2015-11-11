@@ -274,7 +274,7 @@ public class MainActivity extends Activity implements OnClickListener {
         query.addColumn("entity-id", 1);
         query.addColumn("story-points", 1);
         query.setValue("sprint-id", String.valueOf(sprint.getPropertyValue("id")));
-        query.setValue("team-id", String.valueOf(team.getPropertyValue("id")));
+        query.setValue("team.id", String.valueOf(team.getPropertyValue("id")));
         //query.addOrder("last-modified", SortOrder.ASCENDING);
         EntityList list = EntityList.empty();
         try {

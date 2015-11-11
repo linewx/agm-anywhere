@@ -376,8 +376,7 @@ public class TaskDetailActivity extends Activity implements ActionBar.TabListene
             ArrayList<String> statusList = new ArrayList<String>();
             statusList.add("New");
             statusList.add("In Progress");
-            statusList.add("In Testing");
-            statusList.add("Done");
+            statusList.add("Completed");
             popupWindow.setAdapter(new StatusAdapter(mContext, statusList, task.getPropertyValue("status")));
             popupWindow.setOnSelectedListener(new PopupListener.ItemSelectedListener() {
                 @Override

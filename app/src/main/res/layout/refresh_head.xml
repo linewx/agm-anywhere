@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- ListView的头部 -->
+<!-- header of ListView -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
@@ -8,7 +8,7 @@
     android:layout_gravity="center_vertical"
     android:background="@color/refresh_head_bg">
 
-    <!-- 内容 -->
+    <!-- content -->
 
     <RelativeLayout
         android:id="@+id/head_contentLayout"
@@ -17,7 +17,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
-        <!-- 箭头图像、进度条 -->
+        <!-- arrow and progress bar -->
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:layout_centerVertical="true" 
             android:layout_marginLeft="30dp">
 
-            <!-- 箭头 -->
+            <!-- arrow -->
 
             <ImageView
                 android:id="@+id/head_arrowImageView"
@@ -36,7 +36,7 @@
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/refresh_arrow" />
 
-            <!-- 进度条 -->
+            <!-- progress bar -->
 
             <ProgressBar
                 android:id="@+id/head_progressBar"
@@ -48,7 +48,7 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <!-- 提示、最近更新 -->
+        <!-- last modified -->
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -57,7 +57,7 @@
             android:gravity="center_horizontal"
             android:orientation="vertical" >
 
-            <!-- 提示 -->
+            <!-- prompt -->
 
             <TextView
                 android:id="@+id/head_tipsTextView"
@@ -67,7 +67,7 @@
                 android:textColor="@color/whites"
                 android:textSize="18sp" />
 
-            <!-- 最近更新 -->
+            <!-- last modified -->
 
             <TextView
                 android:id="@+id/head_lastUpdatedTextView"
